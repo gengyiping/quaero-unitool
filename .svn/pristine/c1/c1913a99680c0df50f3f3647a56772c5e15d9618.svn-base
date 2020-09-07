@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<QCIT> 
+  <MB1> 
+    <ipPort>192.168.3.221:11223</ipPort>  
+    <flag>true</flag>  
+    <loginTime>1596164321039</loginTime> 
+  </MB1>  
+  <MB2> 
+    <ipPort>192.168.3.222:11223</ipPort>  
+    <flag>true</flag> 
+  </MB2>  
+  <MB3> 
+    <ipPort>192.168.3.223:11223</ipPort>  
+    <flag>true</flag> 
+  </MB3>  
+  <MB4> 
+    <ipPort>192.168.3.224:11223</ipPort>  
+    <flag>true</flag> 
+  </MB4>  
+  <MB5> 
+    <ipPort>192.168.3.225:11223</ipPort>  
+    <flag>true</flag> 
+  </MB5>  
+  <MB6> 
+    <ipPort>192.168.3.226:11223</ipPort>  
+    <flag>false</flag> 
+  </MB6>  
+  <MB7> 
+    <ipPort>192.168.3.227:11223</ipPort>  
+    <flag>false</flag> 
+  </MB7>  
+  <MB8> 
+    <ipPort>192.168.3.228:11223</ipPort>  
+    <flag>false</flag> 
+  </MB8>  
+  <MB9> 
+    <ipPort>192.168.3.229:11223</ipPort>  
+    <flag>false</flag> 
+  </MB9>  
+  <MB10> 
+    <ipPort>192.168.3.230:11223</ipPort>  
+    <flag>false</flag> 
+  </MB10>  
+  <MB11> 
+    <ipPort>192.168.3.231:11223</ipPort>  
+    <flag>false</flag> 
+  </MB11>  
+  <MB12> 
+    <ipPort>192.168.3.232:11223</ipPort>  
+    <flag>false</flag> 
+  </MB12>  
+  <MB13> 
+    <ipPort>192.168.3.233:11223</ipPort>  
+    <flag>false</flag> 
+  </MB13> 
+</QCIT>

@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<QCIT>
+  <Motor>
+    <First>-2200</First>
+    <Second>220</Second>
+    <Progressive>1100</Progressive>
+    <PriProgressive>12540</PriProgressive>
+    <Intercept>3500</Intercept>
+  </Motor>
+  <Routine>
+    <Entrance>3734</Entrance>
+    <ImportTest>6000</ImportTest>
+    <Exit>4300</Exit>
+    <Cache>2410</Cache>
+    <Caching>5710</Caching>
+  </Routine>
+  <Priority>
+    <Entrance>3734</Entrance>
+    <ExitDetection>5900</ExitDetection>
+    <Exit>4500</Exit>
+    <ReturnBelt>3280</ReturnBelt>
+  </Priority>
+  <Return>
+    <Entrance>14200</Entrance>
+    <ImportTest>47200</ImportTest>
+    <Caching>3700</Caching>
+  </Return>
+</QCIT>
