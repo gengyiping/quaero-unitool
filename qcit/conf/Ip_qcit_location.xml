@@ -4,7 +4,8 @@
   <MB1> 
     <ipPort>192.168.3.221:11223</ipPort>  
     <flag>true</flag>  
-    <loginTime>1596164321039</loginTime> 
+    <double>true</double>  
+    <loginTime>1603347745067</loginTime> 
   </MB1>  
   <MB2> 
     <ipPort>192.168.3.222:11223</ipPort>  
@@ -20,7 +21,7 @@
   </MB4>  
   <MB5> 
     <ipPort>192.168.3.225:11223</ipPort>  
-    <flag>true</flag> 
+    <flag>false</flag> 
   </MB5>  
   <MB6> 
     <ipPort>192.168.3.226:11223</ipPort>  

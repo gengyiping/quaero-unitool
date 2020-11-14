@@ -3,11 +3,14 @@ package com.small.qcit.test;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -23,6 +26,7 @@ import com.quest.software.bus4j.datatype.CmdCodeException;
 import com.quest.software.bus4j.datatype.ErrCodeException;
 import com.quest.software.bus4j.module.DataFormatException;
 import com.quest.software.bus4j.module.ExecuteException;
+import com.small.qcit.dto.LoginState;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,8 +50,49 @@ public class WebsocketController {
 		}
 	        return "测试初始化复位成功";
 	    }
-	 @Autowired
-	    public SimpMessagingTemplate template;  
+	 private List<LoginState> loginmess=new ArrayList<LoginState>();
+	 @MessageMapping("/initstate/{ip}")
+	 @SendTo("/user/initstate/alone/getResponse")
+	 public String initstate(@DestinationVariable("ip") String ip) {
+		 System.out.println("状态--------");
+		 if(loginmess.size()==0){
+			 LoginState logmes=new LoginState();
+			 logmes.setIp(ip);
+			 String[] info=new String[3];
+			 info[0]="0";info[0]="#";info[1]="#";
+			 logmes.setLoginInterface(info);
+			 loginmess.add(logmes);
+		 }else{
+			 for(int i=0;i<loginmess.size();i++){
+				 if(loginmess.get(i).getIp().equals(ip)){
+					 String[] info=loginmess.get(i).getLoginInterface();
+					 if(!"#".equals(info[0]))return info[0]+"_#_#";
+					 if(!"#".equals(info[1]))return info[0]+"_"+info[1]+"_#";
+					 if(!"#".equals(info[2]))return info[0]+"_"+info[1]+"_"+info[2];
+				 }
+			 } 
+		 }
+		return "";
+	 }
+	 @MessageMapping("/page/{ip}/{page}")
+	 @SendTo("/user/page/alone/getResponse")
+	 public String pageload(@DestinationVariable("ip") String ip,@DestinationVariable("page") String page) {
+		 System.out.println("状态--------");
+			 for(int i=0;i<loginmess.size();i++){
+				 if(loginmess.get(i).getIp().equals(ip)){
+					 String[] pages=page.split("_");
+					 if(!"#".equals(pages[0])){
+				      String[] info= loginmess.get(i).getLoginInterface();
+				      info[0]=pages[0];
+				      info[1]="";
+				      info[2]="";
+				      loginmess.get(i).setLoginInterface(info);
+					 }
+				 }
+			 } 
+	        return "";
+	    }
+	 
 	 @MessageMapping("/reset")
 	 @SendTo("/topic/getResponse")
 	 //@SendTo("/user/1111/alone/getResponse")
@@ -58,8 +103,6 @@ public class WebsocketController {
 			api.motorReset(0, 0);
 		} catch (ErrCodeException | CmdCodeException | IOException | DocumentException | ExecuteException
 				 e) {
-//			e.printStackTrace();
-//			return  e.getMessage();
 			StringWriter sw = new StringWriter();    
 			PrintWriter pw = new PrintWriter(sw);    
 			e.printStackTrace(pw);    

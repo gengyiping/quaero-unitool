@@ -1,12 +1,22 @@
 package com.small.qcit.config;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.messaging.StompSubProtocolErrorHandler;
+
+import com.small.qcit.Log.LoggerQueue;
 
 /**
  * @title WebSocketConfig
@@ -17,6 +27,8 @@ import org.springframework.web.socket.messaging.StompSubProtocolErrorHandler;
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+//	 @Autowired
+//     private SimpMessagingTemplate messagingTemplate;
     /**
      * 注册stomp端点，,并映射指定的url，主要是起到连接作用
      *
@@ -28,7 +40,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     	stompEndpointRegistry
                 .addEndpoint("/webSocket")  //端点名称
                 //.setHandshakeHandler() 握手处理，主要是连接的时候认证获取其他数据验证等
-                //.addInterceptors() 拦截处理，和http拦截类似
+                //.addInterceptors() //拦截处理，和http拦截类似
                 .setAllowedOrigins("*") //跨域
                 .withSockJS(); //使用sockJS
     	//stompEndpointRegistry.addEndpoint("/queueServer").withSockJS();//注册两个STOMP的endpoint，分别用于广播和点对点  
@@ -60,6 +72,39 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 //    @Bean
 //    public StompSubProtocolErrorHandler webSocketHandler() {
 //        return new WebSocketErrorHandler();
+//    }
+    /**
+     * 推送日志到/topic/pullLogger
+     */
+//    @PostConstruct
+//    public void pushLogger()
+//    {
+//        ExecutorService executorService = Executors.newFixedThreadPool(4);
+//        Runnable fileLog = new Runnable()
+//        {
+//            @Override
+//            public void run()
+//            {
+//                while (true)
+//                {
+//                    try
+//                    {
+//                        String log = LoggerQueue.getInstance().poll().toString();
+//                        if (log != null)
+//                        {
+//                            if (messagingTemplate != null)
+//                                messagingTemplate.convertAndSend("/topic/pullFileLogger", log);
+//                        }
+//                    }
+//                    catch (Exception e)
+//                    {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        };
+//        executorService.submit(fileLog);
+//        executorService.submit(fileLog);
 //    }
 
 }

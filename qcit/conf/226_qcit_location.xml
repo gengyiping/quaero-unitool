@@ -1,25 +1,27 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<QCIT> 
-  <Routine> 
-    <Entrance>3200</Entrance>  
-    <ImportTest>16700</ImportTest>  
-    <Cache>7300</Cache>  
-    <Caching>8700</Caching>  
-    <Resist>11700</Resist>  
-    <Exit>4500</Exit>  
-    <oneFrame>1354</oneFrame>
-  </Routine>  
-  <Priority> 
-    <Entrance>3300</Entrance>  
-    <ImportTest>35100</ImportTest>  
-    <ExitDetection>9092</ExitDetection>  
-    <Exit>4600</Exit> 
-  </Priority>  
-  <Motor> 
-    <First>230</First>  
-    <Second>230</Second>  
-    <Intercept>230</Intercept>  
-    <Progressive>7010</Progressive> 
-  </Motor> 
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<QCIT>
+  <Routine>
+    <Entrance>3200</Entrance>
+    <ImportTest>16700</ImportTest>
+    <Cache>7300</Cache>
+    <Caching>8700</Caching>
+    <Resist>11700</Resist>
+    <Exit>4500</Exit>
+    <oneFrame>1370</oneFrame>
+  </Routine>
+  <Priority>
+    <Entrance>3300</Entrance>
+    <ImportTest>35100</ImportTest>
+    <ExitDetection>9092</ExitDetection>
+    <Exit>4600</Exit>
+  </Priority>
+  <Motor>
+    <First>230</First>
+    <Second>230</Second>
+    <Intercept>230</Intercept>
+    <Progressive>7130</Progressive>
+    <ProInitial>280</ProInitial>
+    <PriInitial>260</PriInitial>
+    <PriProgressive>7110</PriProgressive>
+  </Motor>
 </QCIT>

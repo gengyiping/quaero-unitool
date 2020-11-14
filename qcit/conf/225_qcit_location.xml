@@ -1,32 +1,32 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<QCIT> 
-  <Motor> 
-    <First>2400</First>  
-    <Second>0</Second>  
-    <Progressive>-3200</Progressive>  
-    <Doorway>6900</Doorway> 
-  </Motor>  
-  <Config> 
-    <MOTORMB20H>111</MOTORMB20H>  
-    <MOTORMB22H>26404</MOTORMB22H>  
-    <MOTORMB2JZ>28237</MOTORMB2JZ>  
-    <MOTORMB2ZSS>-1500</MOTORMB2ZSS>  
-    <MOTORMB2XHC>7966</MOTORMB2XHC>  
-    <MOTORMB2XSG>12059</MOTORMB2XSG>  
-    <MOTORMB2XZJ>4056</MOTORMB2XZJ> 
-  </Config>  
-  <Routine> 
-    <Entrance>7300</Entrance>  
-    <ImportTest>6600</ImportTest>  
-    <Cache>3200</Cache> 
-  </Routine>  
-  <Priority> 
-    <Entrance>7250</Entrance>  
-    <ExitDetection>3200</ExitDetection> 
-  </Priority>  
-  <Return> 
-    <Entrance>17133</Entrance>  
-    <ImportTest>7180</ImportTest> 
-  </Return> 
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<QCIT>
+  <Motor>
+    <First>2540</First>
+    <Second>120</Second>
+    <Progressive>-3200</Progressive>
+    <Doorway>6870</Doorway>
+  </Motor>
+  <Config>
+    <MOTORMB20H>111</MOTORMB20H>
+    <MOTORMB22H>26344</MOTORMB22H>
+    <MOTORMB2JZ>28237</MOTORMB2JZ>
+    <MOTORMB2ZSS>-1400</MOTORMB2ZSS>
+    <MOTORMB2XHC>7966</MOTORMB2XHC>
+    <MOTORMB2XSG>12059</MOTORMB2XSG>
+    <MOTORMB2XZJ>4136</MOTORMB2XZJ>
+  </Config>
+  <Routine>
+    <Entrance>7300</Entrance>
+    <ImportTest>6600</ImportTest>
+    <Cache>3200</Cache>
+  </Routine>
+  <Priority>
+    <Entrance>7250</Entrance>
+    <ExitDetection>3200</ExitDetection>
+    <ImportTest>6600</ImportTest>
+  </Priority>
+  <Return>
+    <Entrance>17133</Entrance>
+    <ImportTest>7180</ImportTest>
+  </Return>
 </QCIT>
