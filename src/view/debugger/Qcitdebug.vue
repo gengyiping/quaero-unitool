@@ -27,7 +27,7 @@
     <OVERVIEW v-if="index===1"></OVERVIEW>
     <INJECTION v-if="index===2"></INJECTION>
      <INJECTIONCALIB v-if="index===3"></INJECTIONCALIB>
-    <MOTOR v-else-if="index===4"></MOTOR>
+    <MOTOR v-else-if="index===4" ></MOTOR>
     <MOTORMORE v-else-if="index===5"></MOTORMORE>
     <TEST v-else-if="index===6"></TEST>
     <OVERVIEW v-else></OVERVIEW>  

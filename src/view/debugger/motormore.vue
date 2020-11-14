@@ -1,113 +1,555 @@
 <template>
-  <div class="" > 
-      <div style="width:100%;height:300px; background: red;">
-          电机更多界面
-       <div>
-        <span>用户</span><input type="text" id="user" value="zhangsan"/>
-        <button id="connect" @onclick="connect">Connect</button>
-        <button id="disconnect" disabled="disabled" @onclick="disconnect">Disconnect</button>
-    </div>
-    <div id="conversationDiv">
-        <span>名字</span><input type="text" id="name" value="zhangsan"/>
-        <button id="sendName" v-on:onclick="sendName()">Send</button>
-        <p id="response"></p>
-    </div>
- </div>
-      
+  <div class=""  style="background: rgb(238, 255, 247);"> 
+       <div class="motorhead" >
+           <MotorList height="100%" width="100%"/>
+        </div>
+         <div class="motorContent" >
+         <div class="containerContent" title="读写电机信息" style="width:auto; height:auto;">
+             <table>
+               <tr>
+                 <td>
+                     <div class="container" title="电机最大可运行坐标" style="width:390px; height:auto;">
+                         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm" style="margin-top: 20px;">
+                               <table>
+                                 <tr>
+                                   <td>
+                                       <el-form-item label="运行坐标限制" prop="coord" >
+                                          <el-input v-model="ruleForm.coord"></el-input>
+                                       </el-form-item>
+                                   </td>
+                                   <td class="tdpad">
+                                      <el-row>
+                                        <el-button type="primary"  @click="coordLimit(ruleForm,'read')" plain>读取</el-button>
+                                      </el-row>
+                                   </td>
+                                 </tr>
+                                 <tr>
+                                   <td>
+                                       <el-form-item label="物理坐标限制" prop="physicsCoord" >
+                                          <el-input v-model="ruleForm.physicsCoord"></el-input>
+                                       </el-form-item>
+                                   </td>
+                                   <td class="tdpad">
+                                      <el-row>
+                                        <el-button type="primary"  @click="coordLimit(ruleForm,'write')" plain>写入</el-button>
+                                      </el-row>
+                                   </td>
+                                 </tr>
+                               </table>
+                         </el-form>
+                    </div>
+                 </td>
+                  <td>
+                     <div class="container" title="电机最大允许失步数" style="width:390px; height:auto;">
+                        <el-form :model="outStepForm" :rules="rules" ref="outStepForm" label-width="100px" class="demo-ruleForm" style="margin-top: 20px;">
+                             <table>
+                                 <tr>
+                                   <td>
+                                       <el-form-item label="电机正向失步" prop="coord" >
+                                          <el-input v-model="outStepForm.forward"></el-input>
+                                       </el-form-item>
+                                   </td>
+                                   <td class="tdpad">
+                                      <el-row>
+                                        <el-button type="primary"  @click="outMove(outStepForm,'read')" plain>读取</el-button>
+                                      </el-row>
+                                   </td>
+                                 </tr>
+                                 <tr>
+                                   <td>
+                                       <el-form-item label="电机反向失步" prop="coord" >
+                                          <el-input v-model="outStepForm.reverse"></el-input>
+                                       </el-form-item>
+                                   </td>
+                                   <td class="tdpad">
+                                      <el-row>
+                                        <el-button type="primary"  @click="outMove(outStepForm,'write')" plain>写入</el-button>
+                                      </el-row>
+                                   </td>
+                                 </tr>
+                               </table>
+                        </el-form>
+                    </div>
+                  </td>
+               </tr>
+                <tr>
+                 <td>
+                      <div class="container" title="电机零位传感器坐标" style="width:390px; height:auto;">
+                      <el-form :model="zeroForm" :rules="rules" ref="zeroForm" label-width="100px" class="demo-ruleForm" style="margin-top: 20px;">
+                             <table>
+                                 <tr>
+                                   <td>
+                                       <el-form-item label="电机当前坐标" prop="coord" >
+                                          <el-input v-model="zeroForm.zeroCoord"></el-input>
+                                       </el-form-item>
+                                   </td>
+                                   <td class="tdpad">
+                                      <el-row>
+                                        <el-button type="primary"  @click="zeroOpt(zeroForm,'read')" plain>读取</el-button>
+                                      </el-row>
+                                   </td>
+                                 </tr>
+                                 <tr>
+                                   <td>
+                                   </td>
+                                   <td class="tdpad">
+                                      <el-row>
+                                        <el-button type="primary"  @click="zeroOpt(zeroForm,'write')" plain>写入</el-button>
+                                      </el-row>
+                                   </td>
+                                 </tr>
+                               </table>
+                        </el-form>
+                    </div>
+                 </td>
+                  <td>
+                       <div class="container" title="电机设置文件创建与上传" style="width:390px; height:auto;">
+                       <el-form :model="fileForm" :rules="rules" ref="zeroForm" label-width="0px" class="demo-ruleForm" style="margin-top: 20px;">
+                             <table>
+                                 <tr>
+                                    <td class="tdpad">
+                                     <el-row>
+                                        <el-button type="primary"  @click="createMotorFile()" plain>创建电机默认文件</el-button>
+                                      </el-row>
+                                   </td>
+                                   <td>
+
+               <div>
+    <input type="file" @change="inputFileChange"> 
+    <el-button type="primary" size="mini" @click="clicks">上传</el-button>
+    <div id='dd' hidden></div>
+  </div>
+                                   </td>
+                                  
+                                   <td class="tdpad">
+                                   </td>
+                                 </tr>
+                               </table>
+                        </el-form>
+                    </div>
+                  </td>
+               </tr>
+                <tr>
+                 <td colspan="2">
+                      <div class="container" title="电机运动速度参数" style="width:550px; height:auto;">
+                        <el-form :model="speedForm" :rules="rules" ref="speedForm" label-width="273px" class="demo-ruleForm" style="margin-top: 20px;">
+                             <table class="spacc">
+                                 <tr>
+                                   <td>
+                                       <el-form-item label="电机运动默认速度(p/sec, 1圈=3200p)" prop="coord" >
+                                          <el-input v-model="speedForm.speedCoord"></el-input>
+                                       </el-form-item>
+                                   </td>
+                                   <td class="tdpad">
+                                      <el-row>
+                                        <el-button type="primary"  @click="speedAccForm(speedForm,'read')" plain>读取</el-button>
+                                      </el-row>
+                                   </td>
+                                 </tr>
+                                    <tr>
+                                   <td>
+                                       <el-form-item label="电机运动默认加速度(p/sec^2, 1圈=3200p)" prop="coord" >
+                                          <el-input v-model="speedForm.accCoord"></el-input>
+                                       </el-form-item>
+                                   </td>
+                                   <td class="tdpad">
+                                      <el-row>
+                                        <el-button type="primary"  @click="speedAccForm(speedForm,'write')" plain>写入</el-button>
+                                      </el-row>
+                                   </td>
+                                 </tr>
+                                  <tr>
+                                   <td>
+                                       <el-form-item label="电机复位默认速度(p/sec, 1圈=3200p)" prop="coord" >
+                                          <el-input v-model="speedForm.resetCoord"></el-input>
+                                       </el-form-item>
+                                   </td>
+                                   <td>
+                                   </td>
+                                 </tr>
+                                 <tr>
+                                   <td>
+                                       <el-form-item label="电机复位默认加速度(p/sec^2, 1圈=3200p)" prop="coord" >
+                                          <el-input v-model="speedForm.resetAccCoord"></el-input>
+                                       </el-form-item>
+                                   </td>
+                                   <td>
+                                   </td>
+                                 </tr>
+                               </table>
+                        </el-form>
+                    </div>
+                 </td>
+               </tr>
+               
+             </table>
+         </div>
+          </div>
 </div> 
 </template>
 <script>
 import SockJS from 'sockjs-client'
 import Stomp from 'webstomp-client'
+import MotorList from '@/view/debugger/motorList' 
+import Bus from '../../components/bus' //跨页面自定义传值组件
 export default {
   data() {
     return {
       list1: [],
       stompClient: null,
+       motorId:0,
+       fileList: [],
+       localFile:{},
+       attachmentUrl: '',
+       files:'',
+       ruleForm: {
+          coord: '',
+          physicsCoord: ''
+        },
+        outStepForm:{
+          reverse: '',
+          forward: ''
+        },
+        zeroForm:{
+          zeroCoord: ''
+        },
+        speedForm:{
+           speedCoord: '',
+           accCoord: '',
+           resetCoord: '',
+           resetAccCoord: '',
+        },
+        fileForm:{
+           zeroCoord: ''
+        },
+        addFileName:'',
+        addType:'',
+        addId:'',
+        addArr:[],
+        baseread:''
     }
   },
-  
+   components: {
+    MotorList
+    },
   mounted() {
-//this.connect();
-//this.sendName();
+ this.stompClient= this.$store.state.stompClient;
+   // this.loadselect();//加载电机
+   this.motorId=this.$store.state.motorId;
   },
   methods: {
-      handleSelect(key, keyPath) {
-        console.log(key, keyPath);
-      },
-          setConnected(connected){
-            document.getElementById("connect").disabled = connected;
-            document.getElementById("disconnect").disabled = !connected;
-            $("#response").html();
-        },
-        connect() {
-          debugger
-            var socket = new SockJS("http://127.0.0.1:8080/webSocket");
-            this.stompClient = Stomp.over(socket);
-             this.stompClient.connect({}, function(frame) {
-               // this.setConnected(true);
-                console.log('Connected: ' + frame);
-                this.stompClient.subscribe('/topic/greetings', function(greeting){
-                  console.log(JSON.parse(greeting.body).content)
-                  //  showGreeting(JSON.parse(greeting.body).content);
-                });
- 
-                this.stompClient.subscribe('/user/' + document.getElementById('user').value + '/message',function(greeting){
-                  //  alert(JSON.parse(greeting.body).content);
-                    console.log(JSON.parse(greeting.body).content)
-                   // showGreeting(JSON.parse(greeting.body).content);
-                });
-            });
-//              this.stompClient.connect({}, (frame) => {
-//                this.setConnected(true);
-//        // console.log(frame)
-//         this.stompClient.subscribe('/user/'+document.getElementById('user').value+'/message', (val) => {
-//           // this.list1 = JSON.parse(val.body)
-//           var kk=document.getElementById('user').value
-//           console.log('-------kk------------'+kk)
-// //下面会报错，应该是json的问题，但是数据可以接收到
-//           console.log(val.body)
-//         });
-//       }, (err) => {
-//                 // 连接发生错误时的处理函数
-//                 console.log('失败')
-//                 console.log(err);
-//         })
-            // this.stompClient.connect({}, function(frame) {
-            //     //setConnected(true);
-            //     console.log('Connected: ' + frame);
-            //     this.stompClient.subscribe('/user/'+document.getElementById('user').value+'/message', function(response){
-            //       debugger
-            //         // var response1 = document.getElementById('response');
-            //         // var p = document.createElement('p');
-            //         // p.style.wordWrap = 'break-word';
-            //         // p.appendChild(document.createTextNode(response.body));
-            //         // response1.appendChild(p);
-            //     });
-            // });
-        },
+    coordLimit(ruleForm,opt){
+      debugger
+       var messageJson =""
+      if(opt=='read'){
+         messageJson = JSON.stringify({
+            motorId:this.motorId
+          });
+      }else{
+        messageJson = JSON.stringify({
+            coord:ruleForm.coord,
+            acce:physicsCoord,
+            motorId:this.motorId
+          });
+      }
+       this.stompClient.send('/app/coordLimit/'+opt,messageJson,{})
+        Bus.$on('phymax',function(val){//监听first组件的txt事件
+           var op= val.split(';')
+           if(op[2]=='read'){
+            ruleForm.coord=op[0]
+            ruleForm.physicsCoord=op[1]
+           }
+        })
+    },
+    outMove(outStepForm,opt){
+      debugger;
+       var messageJson =""
+       if(opt=='read'){
+         messageJson = JSON.stringify({
+            motorId:this.motorId
+          });
+      }else{
+         messageJson = JSON.stringify({
+            motorId:this.motorId,
+           coord:outStepForm.reverse,
+            acce:outStepForm.forward
+          });
+      }
+    this.stompClient.send('/app/outStepForm/'+opt,messageJson,{})
+        Bus.$on('outMove',function(val){//监听first组件的txt事件
+           var op= val.split(';')
+           if(op[2]=='read'){
+            outStepForm.reverse=op[0]
+            outStepForm.forward=op[1]
+           }
+        })
+    },
+    zeroOpt(zeroForm,opt){
+       var messageJson =""
+       if(opt=='read'){
+         messageJson = JSON.stringify({
+            motorId:this.motorId
+          });
+      }else{
+         messageJson = JSON.stringify({
+            motorId:this.motorId,
+           coord:zeroForm.zeroCoord,
+          });
+      }
+    this.stompClient.send('/app/zeroOpt/'+opt,messageJson,{})
+        Bus.$on('zeroOpt',function(val){//监听first组件的txt事件
+           var op= val.split(';')
+           if(op[1]=='read'){
+            zeroForm.zeroCoord=op[0]
+           }
+        })
+    },
+    createMotorFile(){
+       var messageJson= JSON.stringify({
+            motorId:this.motorId
+          });
+    this.stompClient.send('/app/createMotorFile',messageJson,{})
+    },
+   speedAccForm(speedForm,opt){
+       var messageJson =""
+       if(opt=='read'){
+         messageJson = JSON.stringify({
+            motorId:this.motorId
+          });
+      }else{
+         messageJson = JSON.stringify({
+            motorId:this.motorId,
+            acce:speedForm.speedCoord,
+            speed:speedForm.accCoord,
+            resetSpeed:speedForm.resetCoord,
+            resetAcc:speedForm.resetAccCoord
+          });
+      }
+    this.stompClient.send('/app/speedAcc/'+opt,messageJson,{})
+         Bus.$on('speedAccList',function(val){//监听first组件的txt事件
+         debugger
+           var op= val.split(';')
+           if(op[4]=='read'){
+              speedForm.speedCoord=op[0]
+              speedForm.accCoord=op[1]
+              speedForm.resetCoord=op[2]
+              speedForm.resetAccCoord=op[3]
+           }
+        })
+    },
+    inputFileChange(e) {
+      debugger
+      this.files = e.target.files[0]
+       var imgName = this.files.name;
+         var idx = imgName.lastIndexOf(".");  
+          if (idx != -1){
+                    var ext = imgName.substr(idx+1).toUpperCase();   
+                    ext = ext.toLowerCase( ); 
+                     if (ext!='json'){
+                       
+                    }else{
+                          this.addArr.push(this.files);
+                    }   
+                }else{
 
-        disconnect() {
-            if (stompClient != null) {
-                this.stompClient.disconnect();
-            }
-            this.setConnected(false);
-            console.log("Disconnected");
-        },
+                }
+      this.reads(this.files);
+    },
+ reads(fil){
+    var reader = new FileReader()
+     reader.readAsText(fil)
+     var text=''
+    reader.onload = function()
+    {
+        debugger
+        text=reader.result.split('}')[0]+"}"
+        document.getElementById("dd").innerHTML += "<input id='upfile' value='"+text+"'>"
+    }
+      // if (fil.length > 1) {
+      //                this.form.fileList = [fileList[fileList.length - 1]]  // 这一步，是 展示最后一次选择的json文件
+      //             }
+    //this.baseread=text
+  },
+    clicks() {
+      debugger
+       if(0 == this.addArr.length){
+             this.$message({
+               type: 'info',
+               message: '请选择要上传的文件'
+             });
+             return;
+           }
+      if(this.files){
+        console.log('baseread='+document.getElementById("upfile").defaultValue.split('}')[0]+"}")
+         var messageJson= JSON.stringify({
+            file:document.getElementById("upfile").defaultValue,
+            fileName:this.files.name
+          });
+        this.stompClient.send('/app/upload',messageJson,{})
+      }
+    },
+    // uploadSuccess: function (response, file, fileList) {
+    //   debugger;
+    //             console.log(response);
+    //             this.attachmentUrl = response.path;
+
+    //         },
+    // submitUpload(fileList) {
+    //    debugger
+    //     console.log("---- this.fileList----"+ this.fileList)
+    //   //  this.$refs.upload.submit();
+    //    this.stompClient.send('/app/upload/'+fileList.raw,{},{})
+    //    this.stompClient.sendf
+    //   },
+    //    onSuccess(res,file,fileList) {
+    //      debugger
         
-        sendName() {
-          debugger
-            var name = document.getElementById('name').value;
-            console.info(1111111111);
-            this.stompClient.send("/app/queue", {}, JSON.stringify({ 'name': name}));
-        },
- 
-  
-    
+    //             this.$alert(res.data, '提示', {
+    //                 confirmButtonText: '确定',
+    //                 callback: action => {
+    //                   console.log("上传成功")
+    //                 },
+    //            })
+    //         },
+    //         onError(res) {
+    //           debugger
+    //             this.$alert('创建失败', '提示', {
+    //                 confirmButtonText: '确定',
+    //                 callback: action => {
+    //                    console.log("上传失败")
+    //                 },
+    //             })
+    //          },
+    //    handleChange(file, fileList) {
+    //      debugger
+    //      file.
+    //       this.localFile=file.raw  // 或者 this.localFile=file.raw
+    //                 // 转换操作可以不放到这个函数里面，
+    //                 // 因为这个函数会被多次触发，上传时触发，上传成功也触发
+    //                 let reader = new FileReader()
+    //                 reader.readAsDataURL(this.localFile);// 这里也可以直接写参数event.raw
+    //                 // 转换成功后的操作，reader.result即为转换后的DataURL ，
+    //                 // 它不需要自己定义，你可以console.log(reader.result)看一下
+    //      reader.onload=()=>{
+    //                     console.log("_++__"+reader.result)
+    //                 }
+    //                 let URL = window.URL || window.webkitURL;
+    //                 ; 
+    //                 console.log("_++__"+URL.createObjectURL(file.raw))
+                    
+    //              if (fileList.length > 1) {
+    //                  this.form.fileList = [fileList[fileList.length - 1]]  // 这一步，是 展示最后一次选择的json文件
+    //              }
+    //          },
+    getFile(event){
+      debugger
+           var file = event.target.files;
+           for(var i = 0;i<file.length;i++){
+            //    上传类型判断
+               var imgName = file[i].name;
+                var idx = imgName.lastIndexOf(".");  
+                if (idx != -1){
+                    var ext = imgName.substr(idx+1).toUpperCase();   
+                    ext = ext.toLowerCase( ); 
+                     if (ext!='json'){
+                       
+                    }else{
+                          this.addArr.push(file[i]);
+                    }   
+                }else{
+
+                }
+           }
+       },
+       submitAddFile(){
+         debugger;
+           if(0 == this.addArr.length){
+             this.$message({
+               type: 'info',
+               message: '请选择要上传的文件'
+             });
+             return;
+           }
+
+            var formData = new FormData();
+            formData.append('num', this.addType);
+            formData.append('linkId',this.addId);
+            formData.append('rfilename',this.addFileName);
+            for(var i=0;i<this.addArr.length;i++){
+                formData.append('fileUpload',this.addArr[i]);
+            }
+          let config = {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              'Authorization': this.token
+            }
+          };
+          this.axios.post(apidate.uploadEnclosure,formData,config)
+            .then((response) => {
+                if(response.data.info=="success"){this.$message({
+                        type: 'success',
+                        message: '附件上传成功!'
+                    });
+                }
+            })
+        }
   }
 }
 
 </script>
 <style rel="stylesheet/scss" lang="scss">
+  .motorhead{
+width:100%;
+height:auto;
+min-height: 12px;
+margin-left: 30px;
+margin-top: 10px;
+  }
+    .motorContent{
+width:100%;
+height:auto;
+margin-top: 10px;
 
+  }
+    .container{
+        position:relative;
+        border:1px solid #DCDFE6;
+        margin-top: 20px;
+       
+    }
+    .container::before{
+        content:attr(title);
+        position:absolute;
+        left:100px;
+        transform:translateX(-50%);
+        -webkit-transform:translate(-50%,-50%);
+        padding:0 10px;
+        background-color:#fff;
+    }
+        .containerContent{
+        position:relative;
+        border:1px solid #DCDFE6;
+        margin-top: 20px;
+       
+    }
+    .containerContent::before{
+        content:attr(title);
+        position:absolute;
+        left:100px;
+        transform:translateX(-50%);
+        -webkit-transform:translate(-50%,-50%);
+        padding:0 10px;
+        background-color:#fff;
+    }
+    .tdpad{
+padding-top: 20px;
+}
+    // .spacc{
+// .el-form-item{
+//       .el-form-item__label{
+//            width: 246px !important;//清楚内联的100宽度的样式
+//       }
+//     }
+//     } 
+    
 </style>
