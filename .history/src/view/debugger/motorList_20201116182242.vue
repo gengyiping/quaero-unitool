@@ -48,6 +48,7 @@ export default {
         this.motorName=command
        var motorId= command.split("_")[1]
        this.motorId=motorId
+        Bus.$emit('motorListId',motorId)
         this.$message('click on item ' + command)
         this.$message('click on item ' + motorId)
          this.$forceUpdate()

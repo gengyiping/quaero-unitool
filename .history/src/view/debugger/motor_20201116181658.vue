@@ -354,7 +354,7 @@ export default {
     debugger
        console.log(direction)
          var messageJson = JSON.stringify({
-            coord:ruleForm.coord,speed:ruleForm.speed,acce:ruleForm.acce,motorId:this.$store.state.motorId
+            coord:ruleForm.coord,speed:ruleForm.speed,acce:ruleForm.acce,motorId:this.motorId
           });
          console.log("----allmotor----"+messageJson);
        if(ruleForm.series==true&direction!='quickReset'&direction!='reset'&direction!='seekZero'){
@@ -371,19 +371,19 @@ export default {
           var _this = this;// `这一步很重要`
     },
     getCoord(){//获取当前坐标
-       this.stompClient.send('/app/getCoord',this.$store.state.motorId,{})
+       this.stompClient.send('/app/getCoord',this.motorId,{})
     },
     steplost(){//获取失步数
-      this.stompClient.send('/app/steplost',this.$store.state.motorId,{})
+      this.stompClient.send('/app/steplost',this.motorId,{})
     },
     motorFlag(){//获取状态标志
-      this.stompClient.send('/app/motorFlag',this.$store.state.motorId,{})
+      this.stompClient.send('/app/motorFlag',this.motorId,{})
     },
     sensorStop(sensorForm,sensorStop){//运动根据传感器停
      var messageJson = JSON.stringify({
             coord:sensorForm.coord,
             sensorId:sensorForm.sensorId,
-            motorId:this.$store.state.motorId
+            motorId:this.motorId
           });
         this.stompClient.send('/app/sensorStop/'+sensorStop,messageJson,{})
     },
@@ -391,13 +391,13 @@ export default {
      var messageJson = JSON.stringify({
             coord:grooveForm.coord,
             sensorId:grooveForm.sensorId,
-            motorId:this.$store.state.motorId
+            motorId:this.motorId
           });
         this.stompClient.send('/app/grooveMove',messageJson,{})
     },
    searchInlineopt(formInline){//走计数凹槽
      var messageJson = JSON.stringify({
-           motorId:this.$store.state.motorId
+           motorId:this.motorId
           });
         this.stompClient.send('/app/searchInlineopt',messageJson,{})
         var _this = this;// `这一步很重要`
@@ -480,10 +480,38 @@ export default {
           cmMotorCurr: formInline.cmMotorCurr,
           cmMotorClk: formInline.cmMotorClk,
           cmMotorForward: formInline.cmMotorForward,
-           motorId:this.$store.state.motorId
+           motorId:this.motorId
           });
         this.stompClient.send('/app/writeInlineopt',messageJson,{})
+        // var _this = this;// `这一步很重要`
+        //  Bus.$on('searchInlineopt',function(val){//监听first组件的txt事件
+        //  debugger;
+        // var vk= JSON.parse(val)
+        //  formInline.cmshift=vk.cmshift
+        //  formInline.cmstopEna=vk.cmstopEna
+        //   formInline.cmemmrEna=vk.cmemmrEna
+        //   formInline.cmemmrtrigger=vk.cmemmrtrigger
+        //   formInline.cmRotate=vk.cmRotate
+        //   formInline.cmZeroSwitch=vk.cmZeroSwitch
+        //   formInline.cmZeroEna=vk.cmZeroEna
+        //   formInline.cmZeroTrigger=vk.cmZeroTrigger
+        //   formInline.cmMotorEna=vk.cmMotorEna
+        //   formInline.cmMotorCurr=vk.cmMotorCurr
+        //   formInline.cmMotorClk=vk.cmMotorClk
+        //   formInline.cmMotorForward=vk.cmMotorForward
+        //   });
     },
+     //   this.stompClient.subscribe('/user/motorback/alone/getResponse', function (res) {
+        //     debugger;
+        //     console.log("----motorback----");
+        //     _this.allmotor = res.body;
+        //     // Bus.$emit('allmotor',_this.allmotor);
+        //     // console.log("----allmotor----"+_this.allmotor);
+        // });
+        //   Bus.$on('motorback',function(val){//监听first组件的txt事件
+        //     debugger
+        //     _this.kuList=val.split(",");
+        // });
     handleSelect(key, keyPath) {
         console.log(key, keyPath);
       },
@@ -498,6 +526,22 @@ export default {
         },
         deep: true
      }
+          // ruleForm:{
+          //       handler:function(nowVal,oldVal){
+          //         debugger
+          //           var $this = this;
+          //           for(let i in $this.ruleForm){
+          //               if(nowVal[i] != $this.ruleForm[i]) {
+          //                   $this.unChange = false;
+          //                   break;
+          //               }else {
+          //                   $this.unChange = true;
+          //               }
+          //           }
+          //       },
+          //       immediate:true, 
+          //       deep:true
+          //   }
       }
 }
 </script>

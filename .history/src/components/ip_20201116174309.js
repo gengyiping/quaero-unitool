@@ -20,3 +20,5 @@ export function getNetworkIp() {
     }
     return needHost;
   }
+
+  export {getNetworkIp}

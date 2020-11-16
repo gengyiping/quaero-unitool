@@ -1,7 +1,15 @@
 const os = require('os')
 
 
-export function getNetworkIp() {
+var myfunction = {
+ 
+    Confirm: function (ConfirmList) {
+       console.log('123' + ConfirmList)
+     },
+    
+   }
+   export default myfunction
+var localIp=function getNetworkIp() {
     let needHost = ''; // 打开的host
     try {
         // 获得网络接口列表
@@ -20,3 +28,5 @@ export function getNetworkIp() {
     }
     return needHost;
   }
+
+  export default localIp

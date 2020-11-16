@@ -1,7 +1,6 @@
 const os = require('os')
 
-
-export function getNetworkIp() {
+var myfunction ips=function getNetworkIp() {
     let needHost = ''; // 打开的host
     try {
         // 获得网络接口列表

@@ -245,7 +245,7 @@ export default {
     }, 1000);
 },
  getIPxs(){
-            let _this = this;
+  let _this = this;
             var RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
             if (RTCPeerConnection) (function () {
                 var rtc = new RTCPeerConnection({iceServers:[]});
@@ -306,7 +306,7 @@ export default {
 handleClick(tab, event) {
   debugger
         console.log(tab, event);
-      //  this.stompClient.send('/app/allreset')
+        this.stompClient.send('/app/allreset')
         var page=tab.name+'_#_#'
         this.stompClient.send('/app/page/'+this.ip+'/'+page,{})
       },

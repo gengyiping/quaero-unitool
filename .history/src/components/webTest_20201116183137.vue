@@ -245,7 +245,7 @@ export default {
     }, 1000);
 },
  getIPxs(){
-            let _this = this;
+  let _this = this;
             var RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
             if (RTCPeerConnection) (function () {
                 var rtc = new RTCPeerConnection({iceServers:[]});

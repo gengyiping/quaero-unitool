@@ -79,7 +79,7 @@ export default {
     //   });
      //this.getUserIP()
     
-   // console.log("xxixiii"+getNetworkIp.getNetworkIp())
+    console.log("xxixiii"+getNetworkIp.getNetworkIp())
     //  debugger
     //  console.log("xxixiii"+Ip)
     // let _this = this;

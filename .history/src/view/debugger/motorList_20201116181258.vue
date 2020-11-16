@@ -2,7 +2,7 @@
   <div class="" > 
             <el-dropdown @command="handleCommand" style="float:left">
                 <span class="el-dropdown-link">
-                    {{motorName}}<i class="el-icon-arrow-down el-icon--right"> </i>
+                    电机选择<i class="el-icon-arrow-down el-icon--right"> </i>
                 </span>
                 <el-dropdown-menu slot="dropdown" >
                     <el-dropdown-item v-for="(ce,index) in kuList" :key="index" :command="ce" icon="el-icon-plus">{{ce}}</el-dropdown-item>
@@ -20,8 +20,8 @@ export default {
       list1: [],
       stompClient: null,
       kuList:null,
-      motorId:0,
-      motorName:'电机选择'
+      motorId:0，
+      motorName:null
     }
   },
   mounted() {
@@ -45,13 +45,12 @@ export default {
    handleCommand(command) {
        debugger;
         var _this = this;// `这一步很重要`
-        this.motorName=command
-       var motorId= command.split("_")[1]
-       this.motorId=motorId
-        this.$message('click on item ' + command)
-        this.$message('click on item ' + motorId)
+       var motorId= command.split("_")[1];
+       this.motorId=motorId;
+        this.$message('click on item ' + command);
+        this.$message('click on item ' + motorId);
          this.$forceUpdate()
-        this.$store.state.motorId=this.motorId
+        this.$store.state.motorId=this.motorId;
       }
   }
 }

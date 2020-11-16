@@ -78,8 +78,7 @@ export default {
     //     this.ip = ip;
     //   });
      //this.getUserIP()
-    
-   // console.log("xxixiii"+getNetworkIp.getNetworkIp())
+     iptools.get
     //  debugger
     //  console.log("xxixiii"+Ip)
     // let _this = this;
@@ -245,7 +244,7 @@ export default {
     }, 1000);
 },
  getIPxs(){
-            let _this = this;
+  let _this = this;
             var RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
             if (RTCPeerConnection) (function () {
                 var rtc = new RTCPeerConnection({iceServers:[]});
@@ -306,14 +305,14 @@ export default {
 handleClick(tab, event) {
   debugger
         console.log(tab, event);
-      //  this.stompClient.send('/app/allreset')
+        this.stompClient.send('/app/allreset')
         var page=tab.name+'_#_#'
         this.stompClient.send('/app/page/'+this.ip+'/'+page,{})
       },
-    // allReset(){
-    //    console.log('allReset')
-    //   this.stompClient.send('/app/allreset')
-    // },
+    allReset(){
+       console.log('allReset')
+      this.stompClient.send('/app/allreset')
+    },
     senMessage() {
       console.log('senMessage')
       this.stompClient.send('/app/test')

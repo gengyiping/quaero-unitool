@@ -483,7 +483,35 @@ export default {
            motorId:this.$store.state.motorId
           });
         this.stompClient.send('/app/writeInlineopt',messageJson,{})
+        // var _this = this;// `这一步很重要`
+        //  Bus.$on('searchInlineopt',function(val){//监听first组件的txt事件
+        //  debugger;
+        // var vk= JSON.parse(val)
+        //  formInline.cmshift=vk.cmshift
+        //  formInline.cmstopEna=vk.cmstopEna
+        //   formInline.cmemmrEna=vk.cmemmrEna
+        //   formInline.cmemmrtrigger=vk.cmemmrtrigger
+        //   formInline.cmRotate=vk.cmRotate
+        //   formInline.cmZeroSwitch=vk.cmZeroSwitch
+        //   formInline.cmZeroEna=vk.cmZeroEna
+        //   formInline.cmZeroTrigger=vk.cmZeroTrigger
+        //   formInline.cmMotorEna=vk.cmMotorEna
+        //   formInline.cmMotorCurr=vk.cmMotorCurr
+        //   formInline.cmMotorClk=vk.cmMotorClk
+        //   formInline.cmMotorForward=vk.cmMotorForward
+        //   });
     },
+     //   this.stompClient.subscribe('/user/motorback/alone/getResponse', function (res) {
+        //     debugger;
+        //     console.log("----motorback----");
+        //     _this.allmotor = res.body;
+        //     // Bus.$emit('allmotor',_this.allmotor);
+        //     // console.log("----allmotor----"+_this.allmotor);
+        // });
+        //   Bus.$on('motorback',function(val){//监听first组件的txt事件
+        //     debugger
+        //     _this.kuList=val.split(",");
+        // });
     handleSelect(key, keyPath) {
         console.log(key, keyPath);
       },
