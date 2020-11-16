@@ -43,10 +43,12 @@ export default {
       },
    handleCommand(command) {
        debugger;
+        var _this = this;// `这一步很重要`
        var motorId= command.split("_")[1];
        this.motorId=motorId;
         this.$message('click on item ' + command);
         this.$message('click on item ' + motorId);
+         this.$forceUpdate()
         this.$store.state.motorId=this.motorId;
       }
   }

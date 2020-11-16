@@ -230,6 +230,7 @@
 import SockJS from 'sockjs-client'
 import Stomp from 'webstomp-client'
 import Bus from '../../components/bus' //跨页面自定义传值组件
+
 export default {
   data() {
     return {

@@ -49,6 +49,8 @@ import Qcitdebug from '@/view/debugger/Qcitdebug'
 import Qcitsoft from '@/view/soft/Qcitsoft'
 import Demo from '@/view/demo/divMove'
 import Bus from './bus'
+import Ip from './ip' //跨页面自定义传值组件
+
 export default {
   data() {
     return {
@@ -77,6 +79,10 @@ export default {
     //     this.ip = ip;
     //   });
      this.getUserIP()
+    //  debugger
+    //  console.log("xxixiii"+Ip)
+    // let _this = this;
+    //   _this.getIPxs();//获取内网ip
     // this.getIPs(function(ip){
     //   debugger;
     //   console.log("ohohohohoohouh"+ip);
@@ -237,6 +243,61 @@ export default {
         });
     }, 1000);
 },
+ getIPxs(){
+  let _this = this;
+            var RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
+            if (RTCPeerConnection) (function () {
+                var rtc = new RTCPeerConnection({iceServers:[]});
+                if (1 || window.mozRTCPeerConnection) {     
+                    rtc.createDataChannel('', {reliable:false});
+                };
+                
+                rtc.onicecandidate = function (evt) {
+                    if (evt.candidate) grepSDP("a="+evt.candidate.candidate);
+                };
+                rtc.createOffer(function (offerDesc) {
+                    grepSDP(offerDesc.sdp);
+                    rtc.setLocalDescription(offerDesc);
+                }, function (e) { console.warn("offer failed", e); });
+                
+                
+                var addrs = Object.create(null);
+                addrs["0.0.0.0"] = false;
+                function updateDisplay(newAddr) {
+                    if (newAddr in addrs) return;
+                    else addrs[newAddr] = true;
+                    var displayAddrs = Object.keys(addrs).filter(function (k) { return addrs[k]; });
+                    for(var i = 0; i < displayAddrs.length; i++){
+                        if(displayAddrs[i].length > 16){
+                            displayAddrs.splice(i, 1);
+                            i--;
+                        }
+                    }
+                    console.log('内网ip',displayAddrs[0]);      //打印出内网ip
+                    _this.user.ip_in = displayAddrs[0];//获取内网ip
+                }
+                
+                function grepSDP(sdp) {
+                    var hosts = [];
+                    sdp.split('\r\n').forEach(function (line, index, arr) { 
+                    if (~line.indexOf("a=candidate")) {    
+                            var parts = line.split(' '),       
+                                addr = parts[4],
+                                type = parts[7];
+                            if (type === 'host') updateDisplay(addr);
+                        } else if (~line.indexOf("c=")) {       
+                            var parts = line.split(' '),
+                                addr = parts[2];
+                            updateDisplay(addr);
+                        }
+                    });
+                }
+            })();
+            else{
+                console.log("请使用主流浏览器：chrome,firefox,opera,safari");
+            }
+ },
+
      reset(){
        console.log('reset')
       this.stompClient.send('/app/reset')
