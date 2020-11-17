@@ -48,8 +48,8 @@ export default {
         this.motorName=command
        var motorId= command.split("_")[1]
        this.motorId=motorId
-        this.$message('click on item ' + command)
-        this.$message('click on item ' + motorId)
+        // this.$message('click on item ' + command)
+        // this.$message('click on item ' + motorId)
          this.$forceUpdate()
         this.$store.state.motorId=this.motorId
       }

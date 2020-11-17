@@ -361,23 +361,11 @@ handleClick(tab, event) {
             Bus.$emit('allmotor',_this.allmotor)
              console.log("----allmotor----"+_this.allmotor)
         });
-        
-         this.stompClient.subscribe('/user/chip/alone/getResponse', function (res) {//获取芯片ID
-              _this.allmotor = res.body
-              Bus.$emit('chipID',_this.allmotor)
-             console.log("----allmotor----"+_this.allmotor)
-        });
-         this.stompClient.subscribe('/user/openTftp/alone/getResponse', function (res) {//开关tftp
-            _this.allmotor = res.body
-            Bus.$emit('opentftp',_this.allmotor)
-             console.log("----allmotor----"+_this.allmotor)
-        });
          this.stompClient.subscribe('/user/sensorSearch/alone/getResponse', function (res) {//查询所有传感器
             _this.allmotor = res.body
-            Bus.$emit('allsensor',_this.allmotor)
+            Bus.$emit('allmotor',_this.allmotor)
              console.log("----allmotor----"+_this.allmotor)
         });
-        
 
          this.stompClient.subscribe('/user/motorcontrol/alone/getResponse', function (res) {
             console.log("----motorcontrol----")

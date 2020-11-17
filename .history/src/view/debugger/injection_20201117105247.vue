@@ -8,27 +8,28 @@
                <td><el-button type="primary" style="width: 126px;" plain>提篮在线确认</el-button></td>
              </tr>
               <tr>
-               <td><el-button type="primary"  @click="allRest(3)" style="width: 126px;" plain>进样仓复位</el-button></td>
-               <td><el-button type="primary"  @click="allRest(1)" style="width: 126px;" plain>转移仓复位</el-button></td>
+               <td><el-button type="primary"  @click="allRest(0)" style="width: 126px;" plain>进样仓复位</el-button></td>
+               <td><el-button type="primary" style="width: 126px;" plain>转移仓复位</el-button></td>
              </tr>
              <tr>
-               <td><el-button type="primary"  @click="allRest(2)" style="width: 126px;" plain>回收仓复位</el-button></td>
-               <td><el-button type="primary"  @click="allRest(6)" style="width: 126px;" plain>递进电机复位</el-button></td>
+               <td><el-button type="primary"  @click="allRest(1)" style="width: 126px;" plain>回收仓复位</el-button></td>
+               <td><el-button type="primary" style="width: 126px;" plain>递进电机复位</el-button></td>
              </tr>
              <tr>
-               <td><el-button type="primary"  @click="allRest(0)" style="width: 126px;" plain>急诊电机复位</el-button></td>
-               <td><el-button type="primary"  @click="allRest(7)" style="width: 126px;" plain>阻挡电机复位</el-button></td>
+               <td><el-button type="primary"  @click="allRest(2)" style="width: 126px;" plain>进样传送复位</el-button></td>
+               <td><el-button type="primary" style="width: 126px;" plain>回收传送复位</el-button></td>
              </tr>
               <tr>
-               <td><el-button type="primary"  @click="allRest(8)" style="width: 126px;" plain>换轨电机复位</el-button></td>
-               <td><el-button type="primary" style="width: 126px;"  @click="getChip()"  plain>获取芯片ID</el-button></td>
+               <td><el-button type="primary"  @click="allRest(3)" style="width: 126px;" plain>换轨电机复位</el-button></td>
+               <td></td>
              </tr>
               <tr>
-               <td colspan="2"><el-input v-model="chid" placeholder="获取芯片ID" ></el-input></td>
+               <td><el-input v-model="input" placeholder="请输入内容" ></el-input></td>
+               <td><el-button type="primary" style="width: 126px;" plain>获取芯片ID</el-button></td>
              </tr>
               <tr>
                <td>
-                 <el-select v-model="servalue" placeholder="请选择" style="width: 126px;" @change="serEdit"> 
+                 <el-select v-model="value" placeholder="请选择" style="width: 126px;">
                       <el-option
                           v-for="item in options"
                           :key="item.value"
@@ -37,11 +38,11 @@
                       </el-option>
                  </el-select>
                </td>
-               <td><el-button type="primary" style="width: 126px;"  @click="openServer()" plain>{{openval}}</el-button></td>
+               <td><el-button type="primary" style="width: 126px;" plain>开启</el-button></td>
              </tr>
              <tr>
                <td>
-                 <el-select v-model="selVal" placeholder="请选择" style="width: 126px;"  @change="fnEdit">
+                 <el-select v-model="value" placeholder="请选择" style="width: 126px;">
                       <el-option
                           v-for="item in moveoptions"
                           :key="item.value"
@@ -70,20 +71,20 @@
                   <td><el-input v-model="sensorsearchForm.sensor4" placeholder="请查询结果"></el-input></td>
                 </tr>
                  <tr>
-                  <td>回收仓电机序号<br/>[D5-S6]</td>
-                  <td><el-input v-model="sensorsearchForm.sensor5" placeholder="请查询结果"></el-input></td>
-                  <td>回收提篮检测(提手)<br/>[D6-R4]</td>
+                  <td>回收仓电机序号<br/>[D6-S6]</td>
                   <td><el-input v-model="sensorsearchForm.sensor6" placeholder="请查询结果"></el-input></td>
-                </tr>
-                 <tr>
-                  <td>回收提篮检测(篮体)<br/>[D7-R5]</td>
+                  <td>回收提篮检测(提手)<br/>[D7-R4]</td>
                   <td><el-input v-model="sensorsearchForm.sensor7" placeholder="请查询结果"></el-input></td>
-                  <td>样本架进篮检测<br/>[D8-R6]</td>
-                  <td><el-input v-model="sensorsearchForm.sensor8" placeholder="请查询结果"></el-input></td>
                 </tr>
                  <tr>
-                  <td>样本架满检测<br/>[D9-R7]</td>
+                  <td>回收提篮检测(篮体)<br/>[D8-R5]</td>
+                  <td><el-input v-model="sensorsearchForm.sensor8" placeholder="请查询结果"></el-input></td>
+                  <td>样本架进篮检测<br/>[D9-R6]</td>
                   <td><el-input v-model="sensorsearchForm.sensor9" placeholder="请查询结果"></el-input></td>
+                </tr>
+                 <tr>
+                  <td>样本架满检测<br/>[D10-R7]</td>
+                  <td><el-input v-model="sensorsearchForm.sensor10" placeholder="请查询结果"></el-input></td>
                   <td>进样样本架入口检测[D12-R8]</td>
                   <td><el-input v-model="sensorsearchForm.sensor12" placeholder="请查询结果"></el-input></td>
                 </tr>
@@ -102,20 +103,8 @@
                  <tr>
                   <td>递进跟随到位检测[D17-R12]</td>
                   <td><el-input v-model="sensorsearchForm.sensor17" placeholder="请查询结果"></el-input></td>
-                  <td>换轨阻挡电机序号<br/>[D18-S10]</td>
+                  <td>换轨电机序号<br/>[D18-S10]</td>
                   <td><el-input v-model="sensorsearchForm.sensor18" placeholder="请查询结果"></el-input></td>
-                </tr>
-                 <tr>
-                  <td>换轨车电机序号[D19-S12]</td>
-                  <td><el-input v-model="sensorsearchForm.sensor19" placeholder="请查询结果"></el-input></td>
-                  <td>回收仓电机序号<br/>[D21-S13]</td>
-                  <td><el-input v-model="sensorsearchForm.sensor21" placeholder="请查询结果"></el-input></td>
-                </tr>
-                 <tr>
-                  <td>急诊位检测[D22-S13]</td>
-                  <td><el-input v-model="sensorsearchForm.sensor22" placeholder="请查询结果"></el-input></td>
-                  <td></td>
-                  <td></td>
                 </tr>
                  <tr>
                   <td ></td>
@@ -141,7 +130,6 @@
 <script>
 import SockJS from 'sockjs-client'
 import Stomp from 'webstomp-client'
-import Bus from '../../components/bus' //跨页面自定义传值组件
 export default {
   data() {
     return {
@@ -177,121 +165,51 @@ export default {
         sensor7:'',
         sensor8:'',
         sensor9:'',
+        sensor10:'',
         sensor12:'',
         sensor13:'',
          sensor14:'',
         sensor15:'',
          sensor16:'',
         sensor17:'',
-        sensor18:'',
-        sensor19:'',
-        sensor21:'',
-        sensor22:''
-        },
-        chid:'',
-        selVal:'',
-        servalue:'',
-        openval:'开启'
+        sensor18:''
+        }
     }
   },
   
   mounted() {
-     this.stompClient= this.$store.state.stompClient;
+ this.stompClient= this.$store.state.stompClient;
   },
   methods: {
       handleSelect(key, keyPath) {
         console.log(key, keyPath);
       },
       allRest(motorId) {
-         this.stompClient.send('/app/reset/'+motorId)
-      },
-      getChip(){
-        debugger
-        var _this = this;// `这一步很重要`
-         this.stompClient.send('/app/chip')
-         Bus.$on('chipID',function(val){//监听fi
-              debugger
-              _this.chid=val
-         })
-      },
-      serEdit(servalue){
-      this.servalue = servalue;
-       console.log(servalue)
-      },
-      openServer(){
-        debugger
-        var _this = this;
-        if(_this.servalue==0){
-          var openvalue=''
-          if(_this.openval=='开启')openvalue=1
-          if(_this.openval=='关闭')openvalue=0   
-          this.stompClient.send('/app/openTftp/'+openvalue)
-          Bus.$on('opentftp',function(val){//监听fi
-              debugger
-              if(val=='开启成功'){
-                   _this.openval='关闭'
-              }else{
-                  _this.openval='开启'
-              }
-         })
-        }
-      },
-      fnEdit(selVal){
-       this.selVal = selVal;
-       console.log(selVal)
+        console.log(key, keyPath);
       },
       sensorsearch(sensorsearchForm){
-         this.stompClient.send('/app/sensorSearch')
-           Bus.$on('allsensor',function(val){//监听first组件的txt事件
-           debugger
-           let obj=JSON.parse(val)
-            for(let key in obj) {
-               debugger
-                if(key==1)sensorsearchForm.sensor1=obj[key]
-                if(key==2)sensorsearchForm.sensor2=obj[key]
-                if(key==3)sensorsearchForm.sensor3=obj[key]
-                 if(key==4)sensorsearchForm.sensor4=obj[key]
-                  if(key==5)sensorsearchForm.sensor5=obj[key]
-                 if(key==6)sensorsearchForm.sensor6=obj[key]
-                 if(key==7)sensorsearchForm.sensor7=obj[key]
-                 if(key==8)sensorsearchForm.sensor8=obj[key]
-                 if(key==9)sensorsearchForm.sensor9=obj[key]
-                 if(key==12)sensorsearchForm.sensor12=obj[key]
-                 if(key==13)sensorsearchForm.sensor13=obj[key]
-                 if(key==14)sensorsearchForm.sensor14=obj[key]
-                 if(key==15)sensorsearchForm.sensor15=obj[key]
-                if(key==16)sensorsearchForm.sensor16=obj[key]
-                 if(key==17)sensorsearchForm.sensor17=obj[key]
-                 if(key==18)sensorsearchForm.sensor18=obj[key]
-                if(key==19)sensorsearchForm.sensor19=obj[key]
-                if(key==21)sensorsearchForm.sensor21=obj[key]
-                if(key==22)sensorsearchForm.sensor22=obj[key]
-              console.log(key);
-              console.log(obj[key]);
-           }
-      
-        })
+         this.stompClient.send('/app/sensoerSearch')
       },
       sensorEmpty(sensorsearchForm){
-        this.sensorsearchForm.sensor1=''
-        this.sensorsearchForm.sensor2=''
-        this.sensorsearchForm.sensor3=''
-        this.sensorsearchForm.sensor4=''
-        this.sensorsearchForm.sensor5=''
-        this.sensorsearchForm.sensor6=''
-        this.sensorsearchForm.sensor7=''
-        this.sensorsearchForm.sensor8=''
-        this.sensorsearchForm.sensor9=''
-        this.sensorsearchForm.sensor12=''
-        this.sensorsearchForm.sensor13=''
-        this.sensorsearchForm.sensor14=''
-        this.sensorsearchForm.sensor15=''
-        this.sensorsearchForm.sensor16=''
-        this.sensorsearchForm.sensor17=''
-        this.sensorsearchForm.sensor18=''
-        this.sensorsearchForm.sensor19=''
-        this.sensorsearchForm.sensor21=''
-        this.sensorsearchForm.sensor22=''
+        debugger
+        sensorsearchForm.sensor1=''
+        sensorsearchForm.sensor2=''
+        sensorsearchForm.sensor3=''
+        sensorsearchForm.sensor4=''
+        sensorsearchForm.sensor5=''
+        sensorsearchForm.sensor6=''
+        sensorsearchForm.sensor7=''
+        sensorsearchForm.sensor8=''
+        sensorsearchForm.sensor9=''
+        sensorsearchForm.sensor10=''
+        sensorsearchForm.sensor12=''
+        sensorsearchForm.sensor13=''
+        sensorsearchForm.sensor14=''
+        sensorsearchForm.sensor15=''
+        sensorsearchForm.sensor16=''
+        sensorsearchForm.sensor17=''
+        sensorsearchForm.sensor18=''
+        
       }
   }
 }

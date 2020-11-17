@@ -243,18 +243,17 @@ export default {
        var messageJson =""
       if(opt=='read'){
          messageJson = JSON.stringify({
-            motorId: this.$store.state.motorId
+            motorId:this.motorId
           });
       }else{
         messageJson = JSON.stringify({
             coord:ruleForm.coord,
-            acce:ruleForm.physicsCoord,
-            motorId:this.$store.state.motorId
+            acce:physicsCoord,
+            motorId:this.motorId
           });
       }
-       this.stompClient.send('/app/coordLimit/'+opt,messageJson)
+       this.stompClient.send('/app/coordLimit/'+opt,messageJson,{})
         Bus.$on('phymax',function(val){//监听first组件的txt事件
-        debugger
            var op= val.split(';')
            if(op[2]=='read'){
             ruleForm.coord=op[0]
@@ -267,11 +266,11 @@ export default {
        var messageJson =""
        if(opt=='read'){
          messageJson = JSON.stringify({
-            motorId: this.$store.state.motorId
+            motorId:this.motorId
           });
       }else{
          messageJson = JSON.stringify({
-            motorId: this.$store.state.motorId,
+            motorId:this.motorId,
            coord:outStepForm.reverse,
             acce:outStepForm.forward
           });
@@ -289,11 +288,11 @@ export default {
        var messageJson =""
        if(opt=='read'){
          messageJson = JSON.stringify({
-            motorId: this.$store.state.motorId
+            motorId:this.motorId
           });
       }else{
          messageJson = JSON.stringify({
-            motorId: this.$store.state.motorId,
+            motorId:this.motorId,
            coord:zeroForm.zeroCoord,
           });
       }
@@ -307,7 +306,7 @@ export default {
     },
     createMotorFile(){
        var messageJson= JSON.stringify({
-            motorId: this.$store.state.motorId
+            motorId:this.motorId
           });
     this.stompClient.send('/app/createMotorFile',messageJson,{})
     },
@@ -315,11 +314,11 @@ export default {
        var messageJson =""
        if(opt=='read'){
          messageJson = JSON.stringify({
-            motorId: this.$store.state.motorId
+            motorId:this.motorId
           });
       }else{
          messageJson = JSON.stringify({
-            motorId: this.$store.state.motorId,
+            motorId:this.motorId,
             acce:speedForm.speedCoord,
             speed:speedForm.accCoord,
             resetSpeed:speedForm.resetCoord,
@@ -389,6 +388,59 @@ export default {
         this.stompClient.send('/app/upload',messageJson,{})
       }
     },
+    // uploadSuccess: function (response, file, fileList) {
+    //   debugger;
+    //             console.log(response);
+    //             this.attachmentUrl = response.path;
+
+    //         },
+    // submitUpload(fileList) {
+    //    debugger
+    //     console.log("---- this.fileList----"+ this.fileList)
+    //   //  this.$refs.upload.submit();
+    //    this.stompClient.send('/app/upload/'+fileList.raw,{},{})
+    //    this.stompClient.sendf
+    //   },
+    //    onSuccess(res,file,fileList) {
+    //      debugger
+        
+    //             this.$alert(res.data, '提示', {
+    //                 confirmButtonText: '确定',
+    //                 callback: action => {
+    //                   console.log("上传成功")
+    //                 },
+    //            })
+    //         },
+    //         onError(res) {
+    //           debugger
+    //             this.$alert('创建失败', '提示', {
+    //                 confirmButtonText: '确定',
+    //                 callback: action => {
+    //                    console.log("上传失败")
+    //                 },
+    //             })
+    //          },
+    //    handleChange(file, fileList) {
+    //      debugger
+    //      file.
+    //       this.localFile=file.raw  // 或者 this.localFile=file.raw
+    //                 // 转换操作可以不放到这个函数里面，
+    //                 // 因为这个函数会被多次触发，上传时触发，上传成功也触发
+    //                 let reader = new FileReader()
+    //                 reader.readAsDataURL(this.localFile);// 这里也可以直接写参数event.raw
+    //                 // 转换成功后的操作，reader.result即为转换后的DataURL ，
+    //                 // 它不需要自己定义，你可以console.log(reader.result)看一下
+    //      reader.onload=()=>{
+    //                     console.log("_++__"+reader.result)
+    //                 }
+    //                 let URL = window.URL || window.webkitURL;
+    //                 ; 
+    //                 console.log("_++__"+URL.createObjectURL(file.raw))
+                    
+    //              if (fileList.length > 1) {
+    //                  this.form.fileList = [fileList[fileList.length - 1]]  // 这一步，是 展示最后一次选择的json文件
+    //              }
+    //          },
     getFile(event){
       debugger
            var file = event.target.files;
