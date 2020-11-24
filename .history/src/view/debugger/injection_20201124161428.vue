@@ -400,7 +400,7 @@ export default {
           });
           var fileName=this.firfiles.name
           var ip=this.bootIp
-         _this.stompClient.send('/app/updateBoot/'+fileName+'/'+ip)
+         _this.stompClient.send('/app/updateBoot',messageJson,{})
       }
     },
       sensorsearch(sensorsearchForm){

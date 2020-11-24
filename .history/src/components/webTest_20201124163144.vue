@@ -325,9 +325,8 @@ handleClick(tab, event) {
     // },
     initWebSocket() {
        console.log('initWebSocket')
-    //  this.connection()
+      this.connection()
       // 需要有一个失败重连得到问题
-      this.initSocket()
     },
 
     // 接收到消息并对消息做处理
@@ -337,215 +336,14 @@ handleClick(tab, event) {
     },
     // 连接成功
     successCallback() {
-       var _this = this;// `这一步很重要`
       console.info('onConnected')
-      // this.stompClient.subscribe('/topic/topicid', this.onMessageReceived)
-      // this.stompClient.send('/app/msg',
-      //   {},
-      //   JSON.stringify({ sender: 'sender', type: 'JOIN' })
-      // )
-        this.stompClient.subscribe('/topic/getResponse', (val) => {
-          // this.list1 = JSON.parse(val.body)
-          console.log('-------++++++++++++++++++++++++++++++------------')
-//下面会报错，应该是json的问题，但是数据可以接收到
-          console.log(val.body)
-        });
-        this.stompClient.subscribe('/user/initstate/alone/getResponse', (val) => {
-          // this.list1 = JSON.parse(val.body)
-          debugger
-          console.log(val.body)
-          var pagesindexs=val.body.split("_")
-          if(pagesindexs[0]!='#') this.activeName=pagesindexs[0]
-          this.activeName="1"
-        });
-        this.stompClient.subscribe('/user/page/alone/getResponse', (val) => {
-          // this.list1 = JSON.parse(val.body)
-          debugger
-          console.log(val.body)
-        });
-        
-         this.stompClient.subscribe('/user/allmotor/alone/getResponse', function (res) {
-            console.log("----allmotor----")
-            debugger
-            _this.allmotor = res.body
-            Bus.$emit('allmotor',_this.allmotor)
-             console.log("----allmotor----"+_this.allmotor)
-        });
-        
-         this.stompClient.subscribe('/user/chip/alone/getResponse', function (res) {//获取芯片ID
-              _this.allmotor = res.body
-              Bus.$emit('chipID',_this.allmotor)
-             console.log("----allmotor----"+_this.allmotor)
-        });
-         this.stompClient.subscribe('/user/openTftp/alone/getResponse', function (res) {//开关tftp
-            _this.allmotor = res.body
-            Bus.$emit('opentftp',_this.allmotor)
-             console.log("----allmotor----"+_this.allmotor)
-        });
-         this.stompClient.subscribe('  /user/openRemote/alone/getResponse', function (res) {//开关远程服务
-            _this.allmotor = res.body
-            _this.coord= _this.allmotor;
-            _this.centerDialogVisible =true
-        });
-         this.stompClient.subscribe('/user/sensorSearch/alone/getResponse', function (res) {//查询所有传感器
-            _this.allmotor = res.body
-            Bus.$emit('allsensor',_this.allmotor)
-             console.log("----allmotor----"+_this.allmotor)
-        });
-         this.stompClient.subscribe('/user/readCoord/alone/getResponse', function (res) {//读取定标参数
-         debugger
-            _this.allmotor = res.body
-            Bus.$emit('readCoord',_this.allmotor)
-             console.log("----allmotor----"+_this.allmotor)
-        });
-         this.stompClient.subscribe('/user/writeCoord/alone/getResponse', function (res) {//保存定标参数
-            _this.allmotor = res.body
-             _this.coord= _this.allmotor;
-            _this.centerDialogVisible =true
-        });
-        this.stompClient.subscribe('/user/searchMotor/alone/getResponse', function (res) {//查询所有电机信息
-        debugger
-            _this.allmotor = res.body
-            Bus.$emit('searchMotor',_this.allmotor)
-             console.log("----allmotor----"+_this.allmotor)
-        });
-         this.stompClient.subscribe('/user/motorOpt/alone/getResponse', function (res) {//查询所有电机信息控制
-            debugger
-            _this.allmotor = res.body
-            _this.coord= _this.allmotor
-              _this.centerDialogVisible =true
-        });
-         this.stompClient.subscribe('/user/transferMove/alone/getResponse', function (res) {//区域转移
-            debugger
-             _this.allmotor = res.body
-              _this.coord= _this.allmotor
-              _this.centerDialogVisible =true
-        });
-         this.stompClient.subscribe('/user/firupload/alone/getResponse', function (res) {//监听上传文件
-            debugger
-             _this.allmotor = res.body
-             Bus.$emit('firupload',res.body)
-        });
-      
-
-         this.stompClient.subscribe('/user/motorcontrol/alone/getResponse', function (res) {
-            console.log("----motorcontrol----")
-            _this.allmotor = res.body
-            // Bus.$emit('allmotor',_this.allmotor);
-            // console.log("----allmotor----"+_this.allmotor);
-        });
-        this.stompClient.subscribe('/user/getCoord/alone/getResponse', function (res) {
-          debugger;
-            console.log("----getCoord----")
-            _this.coord="当前坐标："+JSON.parse(res.body)
-            _this.centerDialogVisible =true
-        });
-        this.stompClient.subscribe('/user/steplost/alone/getResponse', function (res) {
-          debugger;
-            console.log("----steplost----");
-          let reg=new RegExp(';','g')//g代表全部
-                let newMsg=res.body.replace(reg,'<br/>')
-                 console.log("----steplost----"+newMsg)
-                 _this.coord=newMsg;
-            _this.centerDialogVisible =true
-        });
-        this.stompClient.subscribe('/user/motorFlag/alone/getResponse', function (res) {
-          debugger;
-            console.log("----motorFlag----");
-             let reg=new RegExp(';','g')//g代表全部
-                let newMsg=res.body.replace(reg,'<br/>')
-                 console.log("----steplost----"+newMsg)
-                 _this.coord=newMsg
-            _this.centerDialogVisible =true
-        });
-        this.stompClient.subscribe('/user/sensorStop/alone/getResponse', function (res) {
-          debugger;
-            console.log("----sensorStop----")
-                 _this.coord=res.body
-            _this.centerDialogVisible =true
-        });
-         this.stompClient.subscribe('/user/grooveMove/alone/getResponse', function (res) {
-          debugger;
-            console.log("----grooveMove----")
-                 _this.coord=res.body
-                 _this.centerDialogVisible =true
-        });
-         this.stompClient.subscribe('/user/grooveMove/alone/getResponse', function (res) {
-          debugger;
-            console.log("----grooveMove----")
-                 _this.coord=res.body
-                 _this.centerDialogVisible =true
-        });
-        this.stompClient.subscribe('/user/searchInlineopt/alone/getResponse', function (res) {
-          debugger;
-            console.log("----searchInlineopt----")
-                 _this.coord=res.body
-                  Bus.$emit('searchInlineopt',_this.coord)
-               //  _this.centerDialogVisible =true
-        });
-         this.stompClient.subscribe('/user/writeInlineopt/alone/getResponse', function (res) {
-          debugger;
-            console.log("----writeInlineopt----")
-                 _this.coord=res.body
-                 _this.centerDialogVisible =true
-        });
-        this.stompClient.subscribe('/user/coordLimit/alone/getResponse', function (res) {
-          debugger;
-            console.log("----coordLimit----")
-                var op= res.body.split(';')
-                if(op[2]=='read'){
-                    Bus.$emit('phymax',res.body)
-                }else{
-                  _this.coord=res.body
-                  _this.centerDialogVisible =true
-                }
-        });
-         this.stompClient.subscribe('/user/outStepForm/alone/getResponse', function (res) {
-          debugger;
-            console.log("----outStepForm----")
-                var op= res.body.split(';')
-                if(op[2]=='read'){
-                    Bus.$emit('outMove',res.body)
-                }else{
-                  _this.coord=res.body
-                  _this.centerDialogVisible =true
-                }
-        });
-        this.stompClient.subscribe('/user/zeroOpt/alone/getResponse', function (res) {
-          debugger;
-            console.log("----zeroOpt----")
-                var op= res.body.split(';')
-                if(op[1]=='read'){
-                    Bus.$emit('zeroOpt',res.body)
-                }else{
-                  _this.coord=res.body
-                  _this.centerDialogVisible =true
-                }
-        });
-        this.stompClient.subscribe('/user/createMotorFile/alone/getResponse', function (res) {
-          debugger;
-            console.log("----createMotorFile----")
-                  _this.coord=res.body
-                  _this.centerDialogVisible =true
-        });
-         this.stompClient.subscribe('/user/speedAcc/alone/getResponse', function (res) {
-          debugger;
-            console.log("----speedAcc----")
-            var op= res.body.split(';')
-              if(op[4]=='read'){
-                    Bus.$emit('speedAccList',res.body)
-                }else{
-                  _this.coord=res.body
-                  _this.centerDialogVisible =true
-                }
-        });
-         this.stompClient.subscribe('/user/upload/alone/getResponse', function (res) {
-          debugger;
-                  _this.coord=res.body
-                  _this.centerDialogVisible =true
-        });
+      this.stompClient.subscribe('/topic/topicid', this.onMessageReceived)
+      this.stompClient.send('/app/msg',
+        {},
+        JSON.stringify({ sender: 'sender', type: 'JOIN' })
+      )
     },
-     initSocket() {
+     initWebSocket() {
       this.socket = new SockJS(this.socketUrl)// 连接服务端
       this.stompClient = Stomp.over(this.socket)
       this.stompClient.connect({}, (frame) => {
@@ -553,29 +351,6 @@ handleClick(tab, event) {
       }, () => {
         this.reconnect(this.socketUrl, this.successCallback)
       })
-    },
-    // 断开重连使用定时器定时连接服务器
-    reconnect(socketUrl, successCallback) {
-      console.info('in reconnect function')
-      let connected = false
-      const reconInv = setInterval(() => {
-        console.info('in interval' + Math.random())
-        this.socket = new SockJS(socketUrl)
-        this.stompClient = Stomp.over(this.socket)
-        this.stompClient.connect({}, (frame) => {
-          console.info('reconnected success')
-          // 连接成功，清除定时器
-          clearInterval(reconInv)
-          connected = true
-          successCallback()
-        }, () => {
-          console.info('reconnect failed')
-          console.info('connected:' + connected)
-          if (connected) {
-            console.info('connect .... what?')
-          }
-        })
-      }, 2000)
     },
     connection() {
       // 更换that指针

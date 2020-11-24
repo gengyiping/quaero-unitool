@@ -319,7 +319,7 @@ export default {
                 }else{
 
                 }
-      this.readfir(this.firfiles,imgName);
+      this.readfir(this.firfiles);
     },
     Uint8ToString(u8a){
       var CHUNK_SZ = 0x8000;
@@ -329,7 +329,7 @@ export default {
       }
       return c.join("");
      },
-    readfir(fil,imgName){
+    readfir(fil){
       var _this = this
     var reader = new FileReader()
     //reader.readAsText(fil)
@@ -347,35 +347,19 @@ export default {
           console.log("arrayBufferData"+arrayBufferData.length)
            console.log("Uint8Array"+new Uint8Array(arrayBufferData).length)
           str=_this.Uint8ToString(new Uint8Array(arrayBufferData))
-            var n = 4096
+            var n = 1024
             var kstr=''
-            var knum=Math.ceil(str.length/4096)
-            var sleeptime=-1
-        // for (var i = 0, l = str.length; i < l/n; i++) {
-            for (var i = 0; i < knum; i++) {
-               console.log("次数+++:"+i)
-               var a = str.slice(n*i, n*(i+1))
-               _this.stompClient.send('/app/firupload/'+imgName+'/'+knum+'/'+i,a,{})
-                _this.waitsl(150)
-              
-            // this.stompClient.send('/app/firupload',messageJson,{})
-            //  kstr=kstr+"<input class='upfirfile' value='"+a+"'>"
-            // document.getElementById("firdd").innerHTML += "<input class='upfirfile' value='"+a+"'>"
-            // document.getElementById("firdd").append("<input class='upfirfile' value='"+a+"'>");
+         for (var i = 0, l = str.length; i < l/n; i++) {
+             var a = str.slice(n*i, n*(i+1))
+             kstr=kstr+"<input class='upfirfile' value='"+a+"'>"
            }
-           //  document.getElementById("firdd").innerHTML=kstr
+             document.getElementById("firdd").innerHTML=kstr
            console.log("str"+str.length);
-          // document.getElementById("firdd").innerHTML += "<input id='upfirfile' value='"+str+"'>"
+       // document.getElementById("firdd").innerHTML += "<input id='upfirfile' value='"+str+"'>"
     } 
     },
-     waitsl(delay) {
-       var start = (new Date()).getTime();
-        while((new Date()).getTime() - start < delay) {
-          continue;
-       }
-    },
      firclicks() {
-      var _this = this
+     
        if(0 == this.addArrs.length){
              this.$message({
                type: 'info',
@@ -384,7 +368,7 @@ export default {
              return;
            }
       if(this.firfiles){
-      //  console.log('baseread='+document.getElementById("upfirfile").defaultValue)
+        console.log('baseread='+document.getElementById("upfirfile").defaultValue)
          debugger
             var params={} //定义json对象
               var resAccount=new Array();//定义数组对象
@@ -394,13 +378,11 @@ export default {
              })
             params['upfirfile']=resAccount;
          var messageJson= JSON.stringify({
-           // file:resAccount,
+            file:params,
             fileName:this.firfiles.name,
             ipStr:this.bootIp
           });
-          var fileName=this.firfiles.name
-          var ip=this.bootIp
-         _this.stompClient.send('/app/updateBoot/'+fileName+'/'+ip)
+        this.stompClient.send('/app/firupload',messageJson,{})
       }
     },
       sensorsearch(sensorsearchForm){

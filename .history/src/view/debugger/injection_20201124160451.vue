@@ -398,9 +398,7 @@ export default {
             fileName:this.firfiles.name,
             ipStr:this.bootIp
           });
-          var fileName=this.firfiles.name
-          var ip=this.bootIp
-         _this.stompClient.send('/app/updateBoot/'+fileName+'/'+ip)
+         _this.stompClient.send('/app/updateBoot/'+this.firfiles.name+'/'+this.bootIp)
       }
     },
       sensorsearch(sensorsearchForm){

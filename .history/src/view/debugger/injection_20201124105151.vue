@@ -61,7 +61,7 @@
                   <div>
                       <input type="file" @change="firfileChange"> 
                         <el-button type="primary" size="mini" @click="firclicks">固件更新</el-button>
-                       <div id='firdd' hidden></div>
+                       <div id='firdd' ></div>
                    </div>
                 </td>
                <!-- <td><el-button type="primary" style="width: 126px;" @click="transferMove()" plain>选择固件</el-button></td> -->
@@ -319,7 +319,7 @@ export default {
                 }else{
 
                 }
-      this.readfir(this.firfiles,imgName);
+      this.readfir(this.firfiles);
     },
     Uint8ToString(u8a){
       var CHUNK_SZ = 0x8000;
@@ -329,53 +329,26 @@ export default {
       }
       return c.join("");
      },
-    readfir(fil,imgName){
+    readfir(fil){
       var _this = this
     var reader = new FileReader()
     //reader.readAsText(fil)
   // reader.readAsBinaryString(fil)
-   reader.readAsArrayBuffer(fil);
+   reader.readAsArrayBuffer(dstring);
 
      var text=''
-     var str=''
     reader.onload = function()
     {
         debugger
 
       //  text=reader.result
          var arrayBufferData=reader.result;
-          console.log("arrayBufferData"+arrayBufferData.length)
-           console.log("Uint8Array"+new Uint8Array(arrayBufferData).length)
-          str=_this.Uint8ToString(new Uint8Array(arrayBufferData))
-            var n = 4096
-            var kstr=''
-            var knum=Math.ceil(str.length/4096)
-            var sleeptime=-1
-        // for (var i = 0, l = str.length; i < l/n; i++) {
-            for (var i = 0; i < knum; i++) {
-               console.log("次数+++:"+i)
-               var a = str.slice(n*i, n*(i+1))
-               _this.stompClient.send('/app/firupload/'+imgName+'/'+knum+'/'+i,a,{})
-                _this.waitsl(150)
-              
-            // this.stompClient.send('/app/firupload',messageJson,{})
-            //  kstr=kstr+"<input class='upfirfile' value='"+a+"'>"
-            // document.getElementById("firdd").innerHTML += "<input class='upfirfile' value='"+a+"'>"
-            // document.getElementById("firdd").append("<input class='upfirfile' value='"+a+"'>");
-           }
-           //  document.getElementById("firdd").innerHTML=kstr
-           console.log("str"+str.length);
-          // document.getElementById("firdd").innerHTML += "<input id='upfirfile' value='"+str+"'>"
+          str=_this.Uint8ToString(new Uint8Array(arrayBufferData));
+        document.getElementById("firdd").innerHTML += "<input id='upfirfile' value='"+str+"'>"
     } 
     },
-     waitsl(delay) {
-       var start = (new Date()).getTime();
-        while((new Date()).getTime() - start < delay) {
-          continue;
-       }
-    },
      firclicks() {
-      var _this = this
+      debugger
        if(0 == this.addArrs.length){
              this.$message({
                type: 'info',
@@ -384,23 +357,13 @@ export default {
              return;
            }
       if(this.firfiles){
-      //  console.log('baseread='+document.getElementById("upfirfile").defaultValue)
-         debugger
-            var params={} //定义json对象
-              var resAccount=new Array();//定义数组对象
-             var $inputArr = $('.upfirfile');//获取class为resAccount的input对象
-             $inputArr.each(function(){
-	                 resAccount.push($(this).val());//遍历存入数组
-             })
-            params['upfirfile']=resAccount;
+        console.log('baseread='+document.getElementById("upfirfile").defaultValue.split('}')[0]+"}")
          var messageJson= JSON.stringify({
-           // file:resAccount,
+            file:document.getElementById("upfirfile").defaultValue,
             fileName:this.firfiles.name,
             ipStr:this.bootIp
           });
-          var fileName=this.firfiles.name
-          var ip=this.bootIp
-         _this.stompClient.send('/app/updateBoot/'+fileName+'/'+ip)
+        this.stompClient.send('/app/firupload',messageJson,{})
       }
     },
       sensorsearch(sensorsearchForm){

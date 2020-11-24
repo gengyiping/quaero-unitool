@@ -337,7 +337,6 @@ handleClick(tab, event) {
     },
     // 连接成功
     successCallback() {
-       var _this = this;// `这一步很重要`
       console.info('onConnected')
       // this.stompClient.subscribe('/topic/topicid', this.onMessageReceived)
       // this.stompClient.send('/app/msg',

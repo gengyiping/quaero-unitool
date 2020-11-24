@@ -325,9 +325,8 @@ handleClick(tab, event) {
     // },
     initWebSocket() {
        console.log('initWebSocket')
-    //  this.connection()
+      this.connection()
       // 需要有一个失败重连得到问题
-      this.initSocket()
     },
 
     // 接收到消息并对消息做处理
@@ -337,13 +336,12 @@ handleClick(tab, event) {
     },
     // 连接成功
     successCallback() {
-       var _this = this;// `这一步很重要`
       console.info('onConnected')
-      // this.stompClient.subscribe('/topic/topicid', this.onMessageReceived)
-      // this.stompClient.send('/app/msg',
-      //   {},
-      //   JSON.stringify({ sender: 'sender', type: 'JOIN' })
-      // )
+      this.stompClient.subscribe('/topic/topicid', this.onMessageReceived)
+      this.stompClient.send('/app/msg',
+        {},
+        JSON.stringify({ sender: 'sender', type: 'JOIN' })
+      )
         this.stompClient.subscribe('/topic/getResponse', (val) => {
           // this.list1 = JSON.parse(val.body)
           console.log('-------++++++++++++++++++++++++++++++------------')

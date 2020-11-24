@@ -351,11 +351,9 @@ export default {
             var kstr=''
             var knum=Math.ceil(str.length/4096)
             var sleeptime=-1
-        // for (var i = 0, l = str.length; i < l/n; i++) {
-            for (var i = 0; i < knum; i++) {
-               console.log("次数+++:"+i)
-               var a = str.slice(n*i, n*(i+1))
-               _this.stompClient.send('/app/firupload/'+imgName+'/'+knum+'/'+i,a,{})
+         for (var i = 0, l = str.length; i < l/n; i++) {
+             var a = str.slice(n*i, n*(i+1))
+              _this.stompClient.send('/app/firupload/'+imgName+'/'+knum+'/'+i,a,{})
                 _this.waitsl(150)
               
             // this.stompClient.send('/app/firupload',messageJson,{})
@@ -398,9 +396,7 @@ export default {
             fileName:this.firfiles.name,
             ipStr:this.bootIp
           });
-          var fileName=this.firfiles.name
-          var ip=this.bootIp
-         _this.stompClient.send('/app/updateBoot/'+fileName+'/'+ip)
+         _this.stompClient.send('/app/upBoot/'+this.firfiles.name+'/'+this.bootIp,messageJson,{})
       }
     },
       sensorsearch(sensorsearchForm){
