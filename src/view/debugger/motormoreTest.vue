@@ -69,15 +69,22 @@ export default {
         },
         
         sendName() {
-          debugger
+          
             var name = document.getElementById('name').value;
             console.info(1111111111);
             this.stompClient.send("/app/queue", {}, JSON.stringify({ 'name': name}));
         },
- 
-  
-    
-  }
+  },
+  computed: {
+    stompinit(){
+       return this.$store.state.stompClient
+    },
+  },
+  watch:{
+    stompinit(newVal,oldVal){
+      this.stompClient=newVal
+    },
+  },
 }
 
 </script>

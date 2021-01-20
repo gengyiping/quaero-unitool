@@ -1,12 +1,13 @@
 <template >
-  <div class="" style="background: rgb(238, 255, 247);" > 
+<div class="" style="background: rgb(238, 255, 247);" > 
+  <div class="" style="background: rgb(238, 255, 247);width:1080px;height:730px;" > 
        <div class="motorhead" >
            <MotorList height="100%" width="100%"/>
         </div>
       <div class="motorContent" >    
           <div class="container" title="电机控制" style="width:475px; height:auto; float:left;">
                   <div class="container" title="单步控制" style="width:auto; height:auto;">
-                 <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm" style="margin-top: 20px;">
+                 <el-form :model="ruleForm"  ref="ruleForm" label-width="100px" class="demo-ruleForm" style="margin-top: 20px;">
                    <table>
                       <tr  >
                         <td>
@@ -70,12 +71,12 @@
                  </el-form>
                  </div> 
                    <div class="container" title="传感器触发急停" style="width:auto; height:auto;">
-                        <el-form :model="sensorForm" :rules="rules" ref="sensorForm" label-width="100px" class="demo-ruleForm" style="margin-top: 20px;">
+                        <el-form :model="sensorForm"  ref="sensorForm" label-width="100px" class="demo-ruleForm" style="margin-top: 20px;">
                             <table>
                               <tr>
                                 <td>
-                                    <el-form-item label="传感Id" prop="sensorId" :rules="[{ required: true, message: '速度不能为空'},{ type: 'number', message: '速度必须为数字值'}]">
-                                      <el-input-number v-model="sensorForm.sensorId"  @change="handleChange" :min="1" :max="10" label="描述文字"></el-input-number>
+                                    <el-form-item label="传感Id" prop="sensorId" >
+                                      <el-input-number v-model="sensorForm.sensorId"   :min="1" :max="10" label="描述文字"></el-input-number>
                                     </el-form-item>
                                 </td>
                                 <td class="tdpad">
@@ -86,7 +87,7 @@
                               </tr>
                                <tr>
                                 <td>
-                                  <el-form-item label="步数" prop="coord" :rules="[{ required: true, message: '速度不能为空'},{ type: 'number', message: '速度必须为数字值'}]">
+                                  <el-form-item label="步数" prop="coord" :rules="[{ required: true, message: '步数不能为空'},{ type: 'number', message: '步数必须为数字值'}]">
                                       <el-input v-model="sensorForm.coord" style="width:180px"></el-input>
                                  </el-form-item>
                                 </td>
@@ -100,12 +101,12 @@
                          </el-form>
                   </div> 
                    <div class="container" title="走计数凹槽口" style="width:auto; height:auto;">
-                     <el-form :model="grooveForm" :rules="rules" ref="grooveForm" label-width="100px" class="demo-ruleForm" style="margin-top: 20px;">
+                     <el-form :model="grooveForm"  ref="grooveForm" label-width="100px" class="demo-ruleForm" style="margin-top: 20px;">
                             <table>
                               <tr>
                                 <td>
                                     <el-form-item label="凹槽Id" prop="sensorId" >
-                                      <el-input-number v-model="grooveForm.sensorId"  @change="handleChange" :min="1" :max="10" label="描述文字"></el-input-number>
+                                      <el-input-number v-model="grooveForm.sensorId"  :min="1" :max="10" label="描述文字"></el-input-number>
                                     </el-form-item>
                                 </td>
                                 <td class="tdpad">
@@ -116,7 +117,7 @@
                               </tr>
                                <tr>
                                 <td>
-                                  <el-form-item label="步数" prop="coord" >
+                                  <el-form-item label="步数" prop="coord" :rules="[{ required: true, message: '步数不能为空'},{ type: 'number', message: '步数必须为数字值'}]">
                                       <el-input v-model="grooveForm.coord" style="width:180px"></el-input>
                                  </el-form-item>
                                 </td>
@@ -236,14 +237,14 @@
                  </div>
           </div>   
       </div>
-      
+ </div>      
 </div> 
 </template>
 <script>
 import SockJS from 'sockjs-client'
 import Stomp from 'webstomp-client'
 import Bus from '../../components/bus' //跨页面自定义传值组件
-import MotorList from '@/view/debugger/motorList' 
+import MotorList from './motorList' 
 export default {
   data() {
     return {
@@ -350,8 +351,30 @@ export default {
     
   },
   methods: {
+    checkNum:function(val) {
+             var reg = /^[+-]?\d*\.?\d{1,3}$/;
+              if (!reg.test(val)) {
+                return false;
+               }
+            },
     motorcontrol(ruleForm,direction){//direction 电机动作
-    debugger
+    if(direction!='reset'&&ruleForm.resetdirection=='seekZero'){
+         if(this.checkNum(ruleForm.coord)==false){
+           alert("请输入正确的步数数值")
+                return;
+         }
+          if(this.checkNum(ruleForm.speed)==false){
+              alert("请输入正确的速度数值")
+                return;
+         }
+          if(this.checkNum(ruleForm.acce)==false){
+              alert("请输入正确的加速度数值")
+                return;
+         }
+    }
+      Bus.$emit('progres',true) 
+     this.$store.state.resinfo="电机运行开始"
+    
        console.log(direction)
          var messageJson = JSON.stringify({
             coord:ruleForm.coord,speed:ruleForm.speed,acce:ruleForm.acce,motorId:this.$store.state.motorId
@@ -371,15 +394,27 @@ export default {
           var _this = this;// `这一步很重要`
     },
     getCoord(){//获取当前坐标
+      Bus.$emit('progres',true) 
+     this.$store.state.resinfo="获取当前坐标开始"
        this.stompClient.send('/app/getCoord',this.$store.state.motorId,{})
     },
     steplost(){//获取失步数
+      Bus.$emit('progres',true) 
+      this.$store.state.resinfo="获取失步数开始"
       this.stompClient.send('/app/steplost',this.$store.state.motorId,{})
     },
     motorFlag(){//获取状态标志
+      Bus.$emit('progres',true) 
+     this.$store.state.resinfo="获取状态标志开始"
       this.stompClient.send('/app/motorFlag',this.$store.state.motorId,{})
     },
     sensorStop(sensorForm,sensorStop){//运动根据传感器停
+      if(this.checkNum(sensorForm.coord)==false){
+              alert("请输入正确的步数数值")
+                return;
+         }
+      Bus.$emit('progres',true) 
+    this.$store.state.resinfo="运动根据传感器停开始"
      var messageJson = JSON.stringify({
             coord:sensorForm.coord,
             sensorId:sensorForm.sensorId,
@@ -388,6 +423,12 @@ export default {
         this.stompClient.send('/app/sensorStop/'+sensorStop,messageJson,{})
     },
     grooveMove(grooveForm){//走计数凹槽
+     if(this.checkNum(grooveForm.coord)==false){
+              alert("请输入正确的步数数值")
+                return;
+         }
+      Bus.$emit('progres',true) 
+     this.$store.state.resinfo="走计数凹槽开始"
      var messageJson = JSON.stringify({
             coord:grooveForm.coord,
             sensorId:grooveForm.sensorId,
@@ -395,14 +436,16 @@ export default {
           });
         this.stompClient.send('/app/grooveMove',messageJson,{})
     },
-   searchInlineopt(formInline){//走计数凹槽
+   searchInlineopt(formInline){//查询配置
+     Bus.$emit('progres',true) 
+    this.$store.state.resinfo="查询电机配置开始"
      var messageJson = JSON.stringify({
            motorId:this.$store.state.motorId
           });
         this.stompClient.send('/app/searchInlineopt',messageJson,{})
         var _this = this;// `这一步很重要`
          Bus.$on('searchInlineopt',function(val){//监听first组件的txt事件
-         debugger;
+         ;
         var vk= JSON.parse(val)
         if(vk.cmshift>0&vk.cmshift<5){
           formInline.cmshift=vk.cmshift
@@ -466,7 +509,9 @@ export default {
         }
           });
     },
-    writeInlineopt(formInline){//走计数凹槽
+    writeInlineopt(formInline){
+        Bus.$emit('progres',true) 
+    this.$store.state.resinfo="保存电机配置开始"
      var messageJson = JSON.stringify({
              cmshift: formInline.cmshift,
           cmstopEna: formInline.cmstopEna,
@@ -491,14 +536,22 @@ export default {
         this.$message('click on item ' + command);
       }
   },
-   watch: {
+  computed: {
+    stompinit(){
+       return this.$store.state.stompClient
+    },
+  },
+  watch:{
+    stompinit(newVal,oldVal){
+      this.stompClient=newVal
+    },
      'ruleForm.series':{
        handler(newVal, oldVal) {
             console.log(newVal+":"+oldVal);
         },
         deep: true
-     }
-      }
+     },
+  },
 }
 </script>
 <style rel="stylesheet/scss" lang="scss">
@@ -514,7 +567,7 @@ width:100%;
 height:auto;
 min-height: 12px;
 margin-left: 30px;
-margin-top: 10px;
+margin-top: 5px;
   }
   .motorContent{
 width:100%;

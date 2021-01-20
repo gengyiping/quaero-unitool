@@ -1,34 +1,34 @@
 <template>
-  <div class="" > 
-      <div style="width:100%;height:600px;background: rgb(238, 255, 247);">
-         <div class="container" title="基本操作" style="width:265px; height:auto; float:left;">
-           <table class="basetable" style="margin-top:10px">
+  <div class="" style="background: rgb(238, 255, 247);"> 
+      <div style="width:1080px;height:600px;background: rgb(238, 255, 247);">
+         <div class="containerd" title="基本操作" style="width:300px; height:auto; float:left;">
+           <table class="basetable" style="margin-top: 12px">
              <tr>
-               <td><el-button type="primary"  @click="allRest(5)" style="width: 126px;" plain>整机复位</el-button></td>
-               <td><el-button type="primary" style="width: 126px;" plain>提篮在线确认</el-button></td>
+               <td><el-button type="primary"  @click="allRest(5)" style="width: 125px;" plain>整机复位</el-button></td>
+               <td><el-button type="primary" style="width: 125px;" @click="basket()" plain>提篮在线确认</el-button></td>
              </tr>
               <tr>
-               <td><el-button type="primary"  @click="allRest(3)" style="width: 126px;" plain>进样仓复位</el-button></td>
-               <td><el-button type="primary"  @click="allRest(1)" style="width: 126px;" plain>转移仓复位</el-button></td>
+               <td><el-button type="primary"  @click="allRest(3)" style="width: 125px;" plain>进样仓复位</el-button></td>
+               <td><el-button type="primary"  @click="allRest(1)" style="width: 125px;" plain>转移仓复位</el-button></td>
              </tr>
              <tr>
-               <td><el-button type="primary"  @click="allRest(2)" style="width: 126px;" plain>回收仓复位</el-button></td>
-               <td><el-button type="primary"  @click="allRest(6)" style="width: 126px;" plain>递进电机复位</el-button></td>
+               <td><el-button type="primary"  @click="allRest(2)" style="width: 125px;" plain>回收仓复位</el-button></td>
+               <td><el-button type="primary"  @click="allRest(6)" style="width: 125px;" plain>递进电机复位</el-button></td>
              </tr>
              <tr>
-               <td><el-button type="primary"  @click="allRest(0)" style="width: 126px;" plain>急诊电机复位</el-button></td>
-               <td><el-button type="primary"  @click="allRest(7)" style="width: 126px;" plain>阻挡电机复位</el-button></td>
+               <td><el-button type="primary"  @click="allRest(0)" style="width: 125px;" plain>急诊电机复位</el-button></td>
+               <td><el-button type="primary"  @click="allRest(7)" style="width: 125px;" plain>阻挡电机复位</el-button></td>
              </tr>
               <tr>
-               <td><el-button type="primary"  @click="allRest(8)" style="width: 126px;" plain>换轨电机复位</el-button></td>
-               <td><el-button type="primary" style="width: 126px;"  @click="getChip()"  plain>获取芯片ID</el-button></td>
+               <td><el-button type="primary"  @click="allRest(8)" style="width: 125px;" plain>换轨电机复位</el-button></td>
+               <td><el-button type="primary" @click="getChip()" style="width: 125px;"    plain>获取芯片ID</el-button></td>
              </tr>
               <tr>
-               <td colspan="2"><el-input v-model="chid" placeholder="获取芯片ID" ></el-input></td>
+               <td colspan="2" ><el-input v-model="chid" placeholder="获取芯片ID" style="width: 92%;"></el-input></td>
              </tr>
               <tr>
                <td>
-                 <el-select v-model="servalue" placeholder="请选择" style="width: 126px;" @change="serEdit"> 
+                 <el-select v-model="servalue" placeholder="请选择" style="width: 125px;" @change="serEdit"> 
                       <el-option
                           v-for="item in options"
                           :key="item.value"
@@ -37,11 +37,11 @@
                       </el-option>
                  </el-select>
                </td>
-               <td><el-button type="primary" style="width: 126px;"  @click="openServer()" plain>{{openval}}</el-button></td>
+               <td><el-button type="primary" style="width: 125px;"  @click="openServer()" plain>{{openval}}</el-button></td>
              </tr>
              <tr>
                <td>
-                 <el-select v-model="selVal" placeholder="请选择" style="width: 126px;"  @change="fnEdit">
+                 <el-select v-model="selVal" placeholder="请选择" style="width: 125px;"  @change="fnEdit">
                       <el-option
                           v-for="item in moveoptions"
                           :key="item.value"
@@ -50,27 +50,52 @@
                       </el-option>
                  </el-select>
                </td>
-               <td><el-button type="primary" style="width: 126px;" @click="transferMove()" plain>区域转移</el-button></td>
+               <td><el-button type="primary" style="width: 125px;" @click="transferMove()" plain>区域转移</el-button></td>
+             </tr>
+              <tr>
+               <td>
+                 <el-select v-model="ledval" placeholder="请选择" style="width: 125px;"  @change="ledEdit">
+                      <el-option
+                          v-for="item in ledoptions"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value">
+                      </el-option>
+                 </el-select>
+               </td>
+               <td><el-button type="primary" style="width: 125px;" @click="ledcontrl()" plain>LED控制</el-button></td>
+             </tr>
+              <tr>
+               <td><el-input v-model="heightlight" placeholder="亮灯时间" style="width: 85%;"></el-input></td>
+               <td><el-input v-model="lowlight" placeholder="灭灯时间" style="width: 85%;"></el-input></td>
+
              </tr>
               <tr>
                <td><el-input v-model="bootIp" placeholder="Bootload Ip" ></el-input></td>
-               <td><el-button type="primary" style="width: 126px;" @click="openfirupdate()" plain>开启固件更新</el-button></td>
+               <!-- <td><el-button type="primary" style="width: 125px;" @click="openfirupdate()" plain>开启固件更新</el-button></td> -->
+              <td><el-button type="primary" style="width: 125px;" @click="firclicks" plain>开启固件更新</el-button></td>
+
              </tr>
+            
              <tr>
                <td colspan="2">
                   <div>
-                      <input type="file" @change="firfileChange"> 
-                        <el-button type="primary" size="mini" @click="firclicks">固件更新</el-button>
+                      <input type="file"  @change="firfileChange($event)"> 
+                        <!-- <el-button type="primary"  @click="firclicks">固件更新</el-button> -->
                        <div id='firdd' hidden></div>
                    </div>
                 </td>
-               <!-- <td><el-button type="primary" style="width: 126px;" @click="transferMove()" plain>选择固件</el-button></td> -->
+               <!-- <td><el-button type="primary" style="width: 125px;" @click="transferMove()" plain>选择固件</el-button></td> -->
              </tr>
             
            </table>
+            <!-- <el-button type="primary" icon="el-icon-upload" class="mr10" @click="uploadFiles()">文件上传</el-button>
+            <el-dialog v-dialogDrag title="文件上传" center :visible.sync="uploadVisible" width="60%" :close="handlerClose">
+            <UploadBigFile class="uploadSlot"></UploadBigFile>
+        </el-dialog> -->
          </div>
-          <div class="container" title="传感器查询" style="width:655px; height:auto;margin-left: 5px; float:left;">
-             <el-form :model="sensorsearchForm" :rules="rules" ref="sensorsearchForm" label-width="273px" class="demo-ruleForm" style="margin-top: 20px;">
+          <div class="containerd" title="传感器查询" style="width:655px; height:auto;margin-left: 5px; float:left;">
+             <el-form :model="sensorsearchForm"  ref="sensorsearchForm" label-width="273px" class="demo-ruleForm" style="margin-top: 20px;">
               <table style="margin-top:10px">
                 <tr>
                   <td>进样提篮检测(提手)<br/>[D1-R1]</td>
@@ -123,14 +148,20 @@
                  <tr>
                   <td>换轨车电机序号<br/>[D19-S12]</td>
                   <td><el-input v-model="sensorsearchForm.sensor19" placeholder="请查询结果"></el-input></td>
-                  <td>回收仓电机序号<br/>[D21-S13]</td>
+                  <td>急诊电机序号<br/>[D21-S13]</td>
                   <td><el-input v-model="sensorsearchForm.sensor21" placeholder="请查询结果"></el-input></td>
                 </tr>
                  <tr>
-                  <td>急诊位检测<br/>[D22-S13]</td>
+                  <td>急诊位检测<br/>[D22-R13]</td>
                   <td><el-input v-model="sensorsearchForm.sensor22" placeholder="请查询结果"></el-input></td>
                   <td>转移仓到位检测<br/>[D23-R14]</td>
                   <td><el-input v-model="sensorsearchForm.sensor23" placeholder="请查询结果"></el-input></td>
+                </tr>
+                 <tr>
+                  <td>磁铁检测<br/>[D24-R15]</td>
+                  <td><el-input v-model="sensorsearchForm.sensor24" placeholder="请查询结果"></el-input></td>
+                  <td></td>
+                  <td></td>
                 </tr>
                  <tr>
                   <td ></td>
@@ -144,7 +175,11 @@
                       <el-button  @click="sensorEmpty(sensorsearchForm)" plain>&nbsp;&nbsp;清空&nbsp;&nbsp;</el-button>
                     </el-row>
                   </td>
-                  <td></td>
+                  <!-- <td>
+                     <el-row style="margin-top: 10px;">
+                      <el-button type="primary" @click="readwrite()" plain>测试读写文件</el-button>
+                    </el-row>
+                    </td> -->
                 </tr>
               </table>
               </el-form>
@@ -157,9 +192,15 @@
 import SockJS from 'sockjs-client'
 import Stomp from 'webstomp-client'
 import Bus from '../../components/bus' //跨页面自定义传值组件
+//import UploadBigFile from './Upload';
+import {binaryToStr} from '../../components/binaryToStr'
+import iconv from 'iconv-lite'
+//import axios from 'axios'
+//import VueAxios from 'vue-axios'
 export default {
   data() {
     return {
+       uploadVisible: false,
       list1: [],
       stompClient: null,
       options:[{
@@ -167,7 +208,45 @@ export default {
           label: 'tftp服务'
         },{
           value: 1,
-          label: ' 开启轨道远程'
+          label: '开启轨道远程'
+        },{
+          value: 2,
+          label: '扫码灯'
+        }
+       ],
+      ledoptions:[{
+          value: 1,
+          label: '1-灯'
+        },{
+          value: 2,
+          label: '2-灯'
+        },{
+          value: 3,
+          label: '3-灯'
+        },{
+          value: 4,
+          label: '4-灯'
+        },{
+          value: 5,
+          label: '5-灯'
+        },{
+          value: 6,
+          label: '6-灯'
+        },{
+          value: 7,
+          label: '7-灯'
+        },{
+          value: 15,
+          label: '15-进样灯'
+        },{
+          value: 16,
+          label: '16-回收灯'
+        },{
+          value: 17,
+          label: '17-Stop灯'
+        },{
+          value: 19,
+          label: '19-start灯'
         }
        ],
       moveoptions:[{
@@ -224,88 +303,157 @@ export default {
         sensor19:'',
         sensor21:'',
         sensor22:'',
-         sensor23:''
+         sensor23:'',
+         sensor24:''
         },
         chid:'',
         selVal:'',
         servalue:'',
+        ledval:'',
         openval:'开启',
-        closeval:'开启',
+        tftpval:'开启',//tftp服务
+        closeval:'开启',//远程服务
+        scanval:'开启',//条码仪状态
         bootIp:'192.168.3.121',
         firfiles:'',
         addArrs:[],
+        heightlight:'1000',
+        lowlight:'0'
     }
   },
-  
+  // components: {
+  //    UploadBigFile
+  //   },
+ 
   mounted() {
      this.stompClient= this.$store.state.stompClient;
   },
   methods: {
-      handleSelect(key, keyPath) {
-        console.log(key, keyPath);
-      },
-      allRest(motorId) {
-        debugger
-         this.stompClient.send('/app/reset/'+motorId)
-      },
-      getChip(){
-        debugger
+     uploadFiles(){
+            this.uploadVisible = true;
+        },
+    allRest(motorId) {
+       
+      Bus.$emit('progres',true) 
+       this.$store.state.resinfo="复位开始"
+       this.stompClient.send('/app/reset/'+motorId)
+    },
+    basket(){
+        Bus.$emit('progres',true) 
+      this.$store.state.resinfo="查询提篮在线开始"
+      this.stompClient.send('/app/basket')
+    },
+     getChip(){
+         Bus.$emit('progres',true) 
+        this.$store.state.resinfo="获取芯片开始"
         var _this = this;// `这一步很重要`
          this.stompClient.send('/app/chip')
          Bus.$on('chipID',function(val){//监听fi
-              debugger
               _this.chid=val
          })
       },
-      serEdit(servalue){
-        debugger;
-        this.servalue = servalue;
-        if(servalue==1){
-             this.openval='开启'
-        }else if(servalue==0){
-             this.openval=this.closeval
-        }
-        console.log(servalue)
-      },
-      openServer(){
-        debugger
+     openServer(){
+         Bus.$emit('progres',true) 
         var _this = this;
         if(_this.servalue==0){
+           this.$store.state.resinfo="开启tftp服务开始"
           var openvalue=''
           if(_this.openval=='开启')openvalue=1
           if(_this.openval=='关闭')openvalue=0   
           this.stompClient.send('/app/openTftp/'+openvalue)
           Bus.$on('opentftp',function(val){//监听fi
-              debugger
               if(val=='开启成功'){
                    _this.openval='关闭'
               }else{
                   _this.openval='开启'
               }
-               _this.closeval=_this.openval
+               _this.tftpval=_this.openval
          })
         }else if(_this.servalue==1){
+           this.$store.state.resinfo="开启轨道远程开始"
            this.stompClient.send('/app/openRemote')
+        }else if(_this.servalue==2){
+           this.$store.state.resinfo="开启条码灯开始"
+           var scanvals=''
+             if(_this.openval=='开启')scanvals=0
+             if(_this.openval=='关闭')scanvals=1 
+             this.stompClient.send('/app/openscan/'+scanvals)  
+              Bus.$on('openscan',function(val){//监听fi
+              if(val=='开启成功'){
+                   _this.openval='关闭'
+              }else{
+                  _this.openval='开启'
+              }
+               _this.scanval=_this.openval
+         })
         }
       },
-      fnEdit(selVal){
-        debugger
-       this.selVal = selVal;
-       console.log(selVal)
-      },
       transferMove(){//区域转移
-      debugger
+        Bus.$emit('progres',true) 
+        this.$store.state.resinfo="区域转移开始"
         var _this = this
         var transId=_this.selVal
         this.stompClient.send('/app/transferMove/'+transId)
       },
+      ledcontrl(){
+         var _this = this
+         var ledId=_this.ledval
+        this.stompClient.send('/app/ledcontrl/'+ledId+'/'+_this.heightlight+'/'+_this.lowlight)
+      },
       openfirupdate(){
+          Bus.$emit('progres',true) 
+         this.$store.state.resinfo="开启固件更新开始"
          var _this = this
          this.stompClient.send('/app/openBoot')
       },
+       serEdit(servalue){
+        this.servalue = servalue;
+        if(servalue==1){
+             this.openval=this.closeval
+        }else if(servalue==0){
+             this.openval=this.tftpval
+        }else if(servalue==2){
+             this.openval=this.scanval
+        } 
+        console.log(servalue)
+      },
+       fnEdit(selVal){
+       this.selVal = selVal;
+       console.log(selVal)
+      },
+      ledEdit(ledval){
+        this.ledval = ledval;
+      },
+      handleSelect(key, keyPath) {
+        console.log(key, keyPath);
+      },
+      checkIp:function(ip){
+         var val = /([0-9]{1,3}\.{1}){3}[0-9]{1,3}/;
+            var vald = val.exec(ip);
+            if (vald == null) {
+                alert('注意IP有效性');
+                return false;
+            }
+            if (vald != '') {
+                if (vald[0] != ip) {
+                    alert('注意IP有效性');
+                    return false;
+                }
+            }
+      },
        firfileChange(e) {
-      debugger
+      // let files = document.getElementById('firdd').files[0].path
+      //this.imgDataUrl =this.getObjectURL(files)
       this.firfiles = e.target.files[0]
+      var filetype=e.target.files[0].type
+      let url = null ;
+      if (window.createObjectURL!=undefined) { // basic
+        url = window.createObjectURL(this.firfiles) ;
+      }else if (window.webkitURL!=undefined) { // webkit or chrome
+        url = window.webkitURL.createObjectURL(this.firfiles) ;
+      }else if (window.URL!=undefined) { // mozilla(firefox)
+        url = window.URL.createObjectURL(this.firfiles) ;
+      }
        var imgName = this.firfiles.name;
          var idx = imgName.lastIndexOf(".");  
           if (idx != -1){
@@ -319,7 +467,21 @@ export default {
                 }else{
 
                 }
-      this.readfir(this.firfiles,imgName);
+      var dataURL = url;
+      console.log('路径'+dataURL);
+              var data = new FormData();
+        data.append('file', this.firfiles);
+      //  //this.stompClient.send('/app/fir',data)
+      //  debugger
+      this.$axios({
+        method:'post',
+        url: '/api/upload/fir',
+        data: data,
+      })
+        .then(function (response) {
+          console.log(response.data)
+        })
+
     },
     Uint8ToString(u8a){
       var CHUNK_SZ = 0x8000;
@@ -329,60 +491,62 @@ export default {
       }
       return c.join("");
      },
-    readfir(fil,imgName){
-      var _this = this
-    var reader = new FileReader()
-    //reader.readAsText(fil)
-  // reader.readAsBinaryString(fil)
-   reader.readAsArrayBuffer(fil);
-
-     var text=''
-     var str=''
-    reader.onload = function()
-    {
-        debugger
-       text=reader.result
-         var arrayBufferData=reader.result;
-          console.log("arrayBufferData"+arrayBufferData.length)
-           console.log("Uint8Array"+new Uint8Array(arrayBufferData).length)
-          str=_this.Uint8ToString(new Uint8Array(arrayBufferData))
-            var n = 4068
-            var kstr=''
-            var knum=Math.ceil(str.length/n)
-              console.log("总次数+++:"+knum)
-            var sleeptime=-1
-            for (var i = 0; i < knum; i++) {
-              var sknum=i+1
-              console.log("次数+++:"+i)
-               var a = str.slice(n*i, n*(i+1))
-                console.log("分割次数+++:"+i)
-                _this.stompClient.send('/app/firupload/'+imgName+'/'+knum+'/'+sknum,a,{})
-                console.log("发送次数+++:"+i)
-                 _this.waitsl(200)
-                console.log("等待次数+++:"+i)
-           }
-            //  var socket1=new WebSocket('ws://127.0.0.1:8080/webSocket/app/firupload')
-        // for (var i = 0, l = str.length; i < l/n; i++) {
-                        // socket1.onopen=function(){
-                        //      socket1.send(a)
-                        // }
-            // this.stompClient.send('/app/firupload',messageJson,{})
-            //  kstr=kstr+"<input class='upfirfile' value='"+a+"'>"
-            // document.getElementById("firdd").innerHTML += "<input class='upfirfile' value='"+a+"'>"
-            // document.getElementById("firdd").append("<input class='upfirfile' value='"+a+"'>");
-           //  document.getElementById("firdd").innerHTML=kstr
-           console.log("str"+str.length);
-          // document.getElementById("firdd").innerHTML += "<input id='upfirfile' value='"+str+"'>"
-    } 
-    },
+    //读文件
+readFile(filename){
+var fso = new ActiveXObject("Scripting.FileSystemObject");
+var f = fso.OpenTextFile(filename,1);
+var s = "";
+while (!f.AtEndOfStream)
+s += f.ReadLine()+"\n";
+f.Close();
+return s;
+},
+//写文件
+writeFile(filename,filecontent){
+var fso, f, s ;
+fso = new ActiveXObject("Scripting.FileSystemObject");
+f = fso.OpenTextFile(filename,8,true);
+f.WriteLine(filecontent);
+f.Close();
+alert('ok');
+},
+    sendLoad(imgName,n,num,knum,str){//n:多少字节大小，num：第几次分割，knum：总分割数，str：分割内容
+            var _this=this
+                var sknum=num+1 
+                var a = str.slice(n*num, n*(num+1))
+               _this.stompClient.send('/app/firupload/'+imgName+'/'+knum+'/'+sknum,a,{})
+                Bus.$on('firupload',function(val){//监听fi
+                 
+                   if(val.indexOf("上传进行中") != -1){
+                     var sknum=val.split("_")[0]
+                      console.log("次数+++:"+sknum)
+                        _this.sendLoad(imgName,n,sknum,knum,str)
+                   }
+                 })
+            },
      waitsl(delay) {
        var start = (new Date()).getTime();
         while((new Date()).getTime() - start < delay) {
           continue;
        }
     },
+      checkIp:function(ip){
+         var val = /([0-9]{1,3}\.{1}){3}[0-9]{1,3}/;
+            var vald = val.exec(ip);
+            if (vald == null) {
+                alert('注意BootLoadIP有效性');
+                return false;
+            }
+            if (vald != '') {
+                if (vald[0] != ip) {
+                    alert('注意BootLoadIP有效性');
+                    return false;
+                }
+            }
+      },
      firclicks() {
-      var _this = this
+       debugger
+        var _this = this
        if(0 == this.addArrs.length){
              this.$message({
                type: 'info',
@@ -390,9 +554,12 @@ export default {
              });
              return;
            }
+        if(this.checkIp(_this.bootIp)==false){
+          return;
+        }    
       if(this.firfiles){
+         this.$store.state.resinfo="固件更新开始"
       //  console.log('baseread='+document.getElementById("upfirfile").defaultValue)
-         debugger
             var params={} //定义json对象
               var resAccount=new Array();//定义数组对象
              var $inputArr = $('.upfirfile');//获取class为resAccount的input对象
@@ -411,12 +578,14 @@ export default {
       }
     },
       sensorsearch(sensorsearchForm){
+          Bus.$emit('progres',true) 
+         this.$store.state.resinfo="传感器查询开始"
          this.stompClient.send('/app/sensorSearch')
            Bus.$on('allsensor',function(val){//监听first组件的txt事件
-           debugger
+           
            let obj=JSON.parse(val)
             for(let key in obj) {
-               debugger
+               
                 if(key==1)sensorsearchForm.sensor1=obj[key]
                 if(key==2)sensorsearchForm.sensor2=obj[key]
                 if(key==3)sensorsearchForm.sensor3=obj[key]
@@ -437,6 +606,7 @@ export default {
                 if(key==21)sensorsearchForm.sensor21=obj[key]
                 if(key==22)sensorsearchForm.sensor22=obj[key]
                  if(key==23)sensorsearchForm.sensor23=obj[key]
+                  if(key==24)sensorsearchForm.sensor24=obj[key]
               console.log(key);
               console.log(obj[key]);
            }
@@ -444,6 +614,8 @@ export default {
         })
       },
       sensorEmpty(sensorsearchForm){
+          Bus.$emit('progres',true) 
+        this.$store.state.resinfo="清空界面传感器值开始"
         this.sensorsearchForm.sensor1=''
         this.sensorsearchForm.sensor2=''
         this.sensorsearchForm.sensor3=''
@@ -464,31 +636,52 @@ export default {
         this.sensorsearchForm.sensor21=''
         this.sensorsearchForm.sensor22=''
         this.sensorsearchForm.sensor23=''
+         this.sensorsearchForm.sensor24=''
+        this.$store.state.resinfo="清空界面传感器值结束"
+          Bus.$emit('progres',false) 
       }
-  }
+  },
+  computed: {
+    stompinit(){
+       return this.$store.state.stompClient
+    },
+  },
+  watch:{
+    stompinit(newVal,oldVal){
+      this.stompClient=newVal
+    },
+  },
 }
 
 </script>
 <style rel="stylesheet/scss" lang="scss">
- .container{
+ .containerd{
         position:relative;
         border:1px solid #DCDFE6;
         margin-top: 20px;
        
     }
-    .container::before{
+    .containerd::before{
         content:attr(title);
         position:absolute;
-        left:20%;
+        left:10%;
         transform:translateX(-50%);
         -webkit-transform:translate(-50%,-50%);
         padding:0 10px;
         background-color:#fff;
     }
-    .basetable .el-button{
-       .el-button--primary{
-          width: 85px;
-       }
+    // .basetable .el-button{
+    //    .el-button--primary{
+    //       width: 85px;
+    //    }
       
+    // }
+    .basetable td{
+ width: 130px;
     }
+   
+    #nprogress .bar {
+  background: red !important; //自定义颜色
+  height: 10px;
+}
 </style>

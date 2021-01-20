@@ -9,7 +9,7 @@
                <tr>
                  <td>
                      <div class="container" title="电机最大可运行坐标" style="width:390px; height:auto;">
-                         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm" style="margin-top: 20px;">
+                         <el-form :model="ruleForm"  ref="ruleForm" label-width="100px" class="demo-ruleForm" style="margin-top: 20px;">
                                <table>
                                  <tr>
                                    <td>
@@ -19,7 +19,7 @@
                                    </td>
                                    <td class="tdpad">
                                       <el-row>
-                                        <el-button type="primary"  @click="coordLimit(ruleForm,'read')" plain>读取</el-button>
+                                        <el-button type="primary"  @click="readCoordLimit(ruleForm)" plain>读取</el-button>
                                       </el-row>
                                    </td>
                                  </tr>
@@ -31,7 +31,7 @@
                                    </td>
                                    <td class="tdpad">
                                       <el-row>
-                                        <el-button type="primary"  @click="coordLimit(ruleForm,'write')" plain>写入</el-button>
+                                        <el-button type="primary"  @click="writeCoordLimit(ruleForm)" plain>写入</el-button>
                                       </el-row>
                                    </td>
                                  </tr>
@@ -41,7 +41,7 @@
                  </td>
                   <td>
                      <div class="container" title="电机最大允许失步数" style="width:390px; height:auto;">
-                        <el-form :model="outStepForm" :rules="rules" ref="outStepForm" label-width="100px" class="demo-ruleForm" style="margin-top: 20px;">
+                        <el-form :model="outStepForm"  ref="outStepForm" label-width="100px" class="demo-ruleForm" style="margin-top: 20px;">
                              <table>
                                  <tr>
                                    <td>
@@ -51,7 +51,7 @@
                                    </td>
                                    <td class="tdpad">
                                       <el-row>
-                                        <el-button type="primary"  @click="outMove(outStepForm,'read')" plain>读取</el-button>
+                                        <el-button type="primary"  @click="readOutMove(outStepForm)" plain>读取</el-button>
                                       </el-row>
                                    </td>
                                  </tr>
@@ -63,7 +63,7 @@
                                    </td>
                                    <td class="tdpad">
                                       <el-row>
-                                        <el-button type="primary"  @click="outMove(outStepForm,'write')" plain>写入</el-button>
+                                        <el-button type="primary"  @click="writeOutMove(outStepForm)" plain>写入</el-button>
                                       </el-row>
                                    </td>
                                  </tr>
@@ -75,7 +75,7 @@
                 <tr>
                  <td>
                       <div class="container" title="电机零位传感器坐标" style="width:390px; height:auto;">
-                      <el-form :model="zeroForm" :rules="rules" ref="zeroForm" label-width="100px" class="demo-ruleForm" style="margin-top: 20px;">
+                      <el-form :model="zeroForm"  ref="zeroForm" label-width="100px" class="demo-ruleForm" style="margin-top: 20px;">
                              <table>
                                  <tr>
                                    <td>
@@ -85,7 +85,7 @@
                                    </td>
                                    <td class="tdpad">
                                       <el-row>
-                                        <el-button type="primary"  @click="zeroOpt(zeroForm,'read')" plain>读取</el-button>
+                                        <el-button type="primary"  @click="readZeroOpt(zeroForm)" plain>读取</el-button>
                                       </el-row>
                                    </td>
                                  </tr>
@@ -94,7 +94,7 @@
                                    </td>
                                    <td class="tdpad">
                                       <el-row>
-                                        <el-button type="primary"  @click="zeroOpt(zeroForm,'write')" plain>写入</el-button>
+                                        <el-button type="primary"  @click="writeZeroOpt(zeroForm)" plain>写入</el-button>
                                       </el-row>
                                    </td>
                                  </tr>
@@ -104,7 +104,7 @@
                  </td>
                   <td>
                        <div class="container" title="电机设置文件创建与上传" style="width:390px; height:auto;">
-                       <el-form :model="fileForm" :rules="rules" ref="zeroForm" label-width="0px" class="demo-ruleForm" style="margin-top: 20px;">
+                       <el-form :model="fileForm"  ref="zeroForm" label-width="0px" class="demo-ruleForm" style="margin-top: 20px;">
                              <table>
                                  <tr>
                                     <td class="tdpad">
@@ -132,7 +132,7 @@
                 <tr>
                  <td colspan="2">
                       <div class="container" title="电机运动速度参数" style="width:550px; height:auto;">
-                        <el-form :model="speedForm" :rules="rules" ref="speedForm" label-width="273px" class="demo-ruleForm" style="margin-top: 20px;">
+                        <el-form :model="speedForm" ref="speedForm" label-width="273px" class="demo-ruleForm" style="margin-top: 20px;">
                              <table class="spacc">
                                  <tr>
                                    <td>
@@ -142,7 +142,7 @@
                                    </td>
                                    <td class="tdpad">
                                       <el-row>
-                                        <el-button type="primary"  @click="speedAccForm(speedForm,'read')" plain>读取</el-button>
+                                        <el-button type="primary"  @click="readSpeedAcc(speedForm)" plain>读取</el-button>
                                       </el-row>
                                    </td>
                                  </tr>
@@ -154,7 +154,7 @@
                                    </td>
                                    <td class="tdpad">
                                       <el-row>
-                                        <el-button type="primary"  @click="speedAccForm(speedForm,'write')" plain>写入</el-button>
+                                        <el-button type="primary"  @click="writeSpeedAcc(speedForm)" plain>写入</el-button>
                                       </el-row>
                                    </td>
                                  </tr>
@@ -190,7 +190,7 @@
 <script>
 import SockJS from 'sockjs-client'
 import Stomp from 'webstomp-client'
-import MotorList from '@/view/debugger/motorList' 
+import MotorList from './motorList' 
 import Bus from '../../components/bus' //跨页面自定义传值组件
 export default {
   data() {
@@ -238,108 +238,161 @@ export default {
    this.motorId=this.$store.state.motorId;
   },
   methods: {
-    coordLimit(ruleForm,opt){
-      debugger
-       var messageJson =""
-      if(opt=='read'){
-         messageJson = JSON.stringify({
+     checkNum:function(val) {
+             var reg = /^[+-]?\d*\.?\d{1,3}$/;
+              if (!reg.test(val)) {
+                return false;
+               }
+            },
+    readCoordLimit(ruleForm){
+        Bus.$emit('progres',true) 
+      this.$store.state.resinfo="查询运动坐标限制开始"
+       var messageJson  = JSON.stringify({
             motorId: this.$store.state.motorId
           });
-      }else{
-        messageJson = JSON.stringify({
+       this.stompClient.send('/app/coordLimit/read',messageJson)
+        Bus.$on('phymax',function(val){//监听first组件的txt事件
+        
+           var op= val.split(';')
+            ruleForm.coord=op[0]
+            ruleForm.physicsCoord=op[1]
+        })
+    },
+    writeCoordLimit(ruleForm){
+      if(checkNum(ruleForm.coord)==false){
+            alert("请输入正确的运行坐标限制数值")
+                return;
+      }
+      if(checkNum(ruleForm.physicsCoord)==false){
+            alert("请输入正确的物理坐标限制数值")
+                return;
+      }
+        Bus.$emit('progres',true) 
+       this.$store.state.resinfo="保存运动坐标限制开始"
+       var messageJson  = JSON.stringify({
             coord:ruleForm.coord,
             acce:ruleForm.physicsCoord,
             motorId:this.$store.state.motorId
           });
-      }
-       this.stompClient.send('/app/coordLimit/'+opt,messageJson)
-        Bus.$on('phymax',function(val){//监听first组件的txt事件
-        debugger
-           var op= val.split(';')
-           if(op[2]=='read'){
-            ruleForm.coord=op[0]
-            ruleForm.physicsCoord=op[1]
-           }
-        })
+       this.stompClient.send('/app/coordLimit/write',messageJson)
     },
-    outMove(outStepForm,opt){
-      debugger;
-       var messageJson =""
-       if(opt=='read'){
-         messageJson = JSON.stringify({
+    readOutMove(outStepForm){
+        Bus.$emit('progres',true) 
+       this.$store.state.resinfo="查询失步数开始"
+       var messageJson = JSON.stringify({
             motorId: this.$store.state.motorId
           });
-      }else{
-         messageJson = JSON.stringify({
-            motorId: this.$store.state.motorId,
-           coord:outStepForm.reverse,
-            acce:outStepForm.forward
-          });
-      }
-    this.stompClient.send('/app/outStepForm/'+opt,messageJson,{})
+       this.stompClient.send('/app/outStepForm/read',messageJson,{})
         Bus.$on('outMove',function(val){//监听first组件的txt事件
            var op= val.split(';')
-           if(op[2]=='read'){
             outStepForm.reverse=op[0]
             outStepForm.forward=op[1]
-           }
         })
     },
-    zeroOpt(zeroForm,opt){
+     writeOutMove(outStepForm){
+       if(checkNum(outStepForm.forward)==false){
+            alert("请输入正确的正向失步数数值")
+                return;
+      }
+       if(checkNum(outStepForm.reverse)==false){
+            alert("请输入正确的反向失步数数值")
+                return;
+      }
+         Bus.$emit('progres',true) 
+      this.$store.state.resinfo="保存失步数开始"
        var messageJson =""
-       if(opt=='read'){
          messageJson = JSON.stringify({
+            motorId: this.$store.state.motorId,
+           coord:outStepForm.forward,
+            acce:outStepForm.reverse
+          });
+    this.stompClient.send('/app/outStepForm/write',messageJson,{})
+    },
+    readZeroOpt(zeroForm){
+        Bus.$emit('progres',true) 
+       this.$store.state.resinfo="查询零位坐标开始"
+       var messageJson  = JSON.stringify({
             motorId: this.$store.state.motorId
           });
-      }else{
-         messageJson = JSON.stringify({
+    this.stompClient.send('/app/zeroOpt/read',messageJson,{})
+        Bus.$on('zeroOpt',function(val){//监听first组件的txt事件
+            zeroForm.zeroCoord=val
+        })
+    },
+     writeZeroOpt(zeroForm){
+        if(checkNum(zeroForm.zeroCoord)==false){
+            alert("请输入正确的零位坐标数值")
+                return;
+      }
+
+         Bus.$emit('progres',true) 
+        this.$store.state.resinfo="保存零位坐标开始"
+       var messageJson = JSON.stringify({
             motorId: this.$store.state.motorId,
            coord:zeroForm.zeroCoord,
           });
-      }
-    this.stompClient.send('/app/zeroOpt/'+opt,messageJson,{})
-        Bus.$on('zeroOpt',function(val){//监听first组件的txt事件
-           var op= val.split(';')
-           if(op[1]=='read'){
-            zeroForm.zeroCoord=op[0]
-           }
-        })
+      this.stompClient.send('/app/zeroOpt/write',messageJson,{})
     },
     createMotorFile(){
+        Bus.$emit('progres',true) 
+       this.$store.state.resinfo="创建电机文件开始"
        var messageJson= JSON.stringify({
             motorId: this.$store.state.motorId
           });
     this.stompClient.send('/app/createMotorFile',messageJson,{})
     },
-   speedAccForm(speedForm,opt){
-       var messageJson =""
-       if(opt=='read'){
-         messageJson = JSON.stringify({
+   readSpeedAcc(speedForm){
+       Bus.$emit('progres',true) 
+       this.$store.state.resinfo="读取电机运动参数开始"
+       var messageJson  = JSON.stringify({
             motorId: this.$store.state.motorId
           });
-      }else{
-         messageJson = JSON.stringify({
-            motorId: this.$store.state.motorId,
-            acce:speedForm.speedCoord,
-            speed:speedForm.accCoord,
-            resetSpeed:speedForm.resetCoord,
-            resetAcc:speedForm.resetAccCoord
-          });
-      }
-    this.stompClient.send('/app/speedAcc/'+opt,messageJson,{})
+    this.stompClient.send('/app/speedAcc/read',messageJson,{})
          Bus.$on('speedAccList',function(val){//监听first组件的txt事件
-         debugger
+         
            var op= val.split(';')
-           if(op[4]=='read'){
               speedForm.speedCoord=op[0]
               speedForm.accCoord=op[1]
               speedForm.resetCoord=op[2]
               speedForm.resetAccCoord=op[3]
-           }
         })
     },
+     validate:function(num){
+      var reg = /^\d+(?=\.{0,1}\d+$|$)/
+     if(reg.test(num)) return true;
+     return false ;  
+     },
+     writeSpeedAcc(speedForm){
+       if(validate(speedForm.accCoord)==false){
+              alert("请输入正数电机速度数值")
+                return;
+       }
+       if(validate(speedForm.speedCoord)==false){
+              alert("请输入正数电机加速度数值")
+                return;
+       }
+       if(validate(speedForm.resetCoord)==false){
+              alert("请输入正数电机复位速度数值")
+                return;
+       }
+       if(validate(speedForm.resetAccCoord)==false){
+              alert("请输入正数电机复位加速度数值")
+                return;
+       }
+         Bus.$emit('progres',true) 
+        this.$store.state.resinfo="保存电机运动参数开始"
+       var messageJson = JSON.stringify({
+            motorId: this.$store.state.motorId,
+            acce:speedForm.accCoord,
+            speed:speedForm.speedCoord,
+            resetSpeed:speedForm.resetCoord,
+            resetAcc:speedForm.resetAccCoord
+          });
+    this.stompClient.send('/app/speedAcc/write',messageJson,{})
+    },
+    
     inputFileChange(e) {
-      debugger
+      
       this.files = e.target.files[0]
        var imgName = this.files.name;
          var idx = imgName.lastIndexOf(".");  
@@ -362,7 +415,7 @@ export default {
      var text=''
     reader.onload = function()
     {
-        debugger
+        
         text=reader.result.split('}')[0]+"}"
         document.getElementById("dd").innerHTML += "<input id='upfile' value='"+text+"'>"
     }
@@ -372,14 +425,14 @@ export default {
     //this.baseread=text
   },
     clicks() {
-      debugger
-       if(0 == this.addArr.length){
-             this.$message({
-               type: 'info',
+      if(0 == this.addArr.length){
+        this.$message({
+          type: 'info',
                message: '请选择要上传的文件'
              });
              return;
            }
+      this.$store.state.resinfo="上传电机文件开始"
       if(this.files){
         console.log('baseread='+document.getElementById("upfile").defaultValue.split('}')[0]+"}")
          var messageJson= JSON.stringify({
@@ -390,7 +443,7 @@ export default {
       }
     },
     getFile(event){
-      debugger
+      
            var file = event.target.files;
            for(var i = 0;i<file.length;i++){
             //    上传类型判断
@@ -410,7 +463,7 @@ export default {
            }
        },
        submitAddFile(){
-         debugger;
+         ;
            if(0 == this.addArr.length){
              this.$message({
                type: 'info',
@@ -441,7 +494,17 @@ export default {
                 }
             })
         }
-  }
+  },
+  computed: {
+    stompinit(){
+       return this.$store.state.stompClient
+    },
+  },
+  watch:{
+    stompinit(newVal,oldVal){
+      this.stompClient=newVal
+    },
+  },
 }
 
 </script>
@@ -474,7 +537,7 @@ margin-top: 10px;
         padding:0 10px;
         background-color:#fff;
     }
-        .containerContent{
+    .containerContent{
         position:relative;
         border:1px solid #DCDFE6;
         margin-top: 20px;
@@ -489,9 +552,9 @@ margin-top: 10px;
         padding:0 10px;
         background-color:#fff;
     }
-    .tdpad{
-padding-top: 20px;
-}
+//     .tdpad{
+// padding-top: 20px;
+// }
     // .spacc{
 // .el-form-item{
 //       .el-form-item__label{

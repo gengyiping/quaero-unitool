@@ -1,7 +1,8 @@
 <template>
-  <div class=""  style="background: rgb(238, 255, 247);"> 
-      <div class="containerContent" title="进样测试" style="width:auto; height:auto; ">  
-           <table style="margin-top: 10px;">
+  <div class="" style="background: rgb(238, 255, 247);"> 
+      <div style="width:1080px;height:550px;background: rgb(238, 255, 247);padding-top: 10px;">
+      <div class="containerContent" title="进样测试" style="width:auto; height:auto;">  
+           <table style="margin-top: 20px;">
               <tr>
                   <td colspan="">&emsp;</td>
                   <td><el-button type="primary" @click="start()" plain>开始</el-button></td>
@@ -14,14 +15,14 @@
                   <td colspan="">&emsp;</td>
              <tr>
               <tr>
-               <td colspan="8" rowspan="10">
-                 <el-input type="textarea" v-model="desc" :rows="10" ></el-input>
+               <td colspan="8" rowspan="20">
+                 <el-input type="textarea" style="width:500px; height:450px; " v-model="desc" :rows="20" ></el-input>
                </td>
              </tr>
              
          </table>
       </div>
-      
+      </div> 
 </div> 
 </template>
 <script>
@@ -62,7 +63,7 @@ export default {
     },
 
       start(){
-          debugger
+          
           var _this=this
           this.susp='暂停'
          this.getNowTime()
@@ -158,7 +159,7 @@ margin-top: 10px;
         .containerContent{
         position:relative;
         border:1px solid #DCDFE6;
-        margin-top: 20px;
+        margin-top: 10px;
        
     }
     .containerContent::before{

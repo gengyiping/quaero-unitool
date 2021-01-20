@@ -1,5 +1,5 @@
 <template>
-<div class="width:500;height:500">
+<div class="width:1080px;height:780px">
     应用主界面
 </div>
 </template>

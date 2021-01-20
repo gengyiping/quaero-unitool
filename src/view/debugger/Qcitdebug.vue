@@ -1,5 +1,5 @@
 <template>
-<div class="width:100%;height:100%">
+<div class="width:100%;height:100%;background: rgb(238, 255, 247);">
 <el-menu
 :default-active="activeIndex"
 v-if="activeIndex"
@@ -9,8 +9,9 @@ v-if="activeIndex"
   background-color="#545c64"
   text-color="#fff"
   active-text-color="#ffd04b"
+  border-radius="8px"
   >
-  <el-menu-item index="1">OverView</el-menu-item>
+  <el-menu-item index="1" >OverView</el-menu-item>
   <el-submenu index="2">
     <template slot="title">进样器+前置仓</template>
     <el-menu-item index="2-1">基本操作</el-menu-item>
@@ -25,7 +26,7 @@ v-if="activeIndex"
 </el-menu>
   <div id="maincontain" style="width:100%;height:100%;background: #e5e9f2;">
 <keep-alive>
-    <OVERVIEW v-if="index===1"></OVERVIEW>
+    <OVERVIEW v-if="index===1" ></OVERVIEW>
     <INJECTION v-if="index===2"></INJECTION>
      <INJECTIONCALIB v-if="index===3"></INJECTIONCALIB>
     <MOTOR v-else-if="index===4" ></MOTOR>
@@ -73,7 +74,7 @@ export default {
   methods: {
     activated() {
     this.activeIndex = '1' // 路由跳转设置初始值
-  },
+    },
  handleSelect(key, keyPath) {
    var _this=this
      debugger
@@ -88,29 +89,32 @@ export default {
         this.index =indexkey;
         debugger
         if(keyPath!='#'){
-       var pageL= localStorage.getItem('page')
-       var pages=pageL.split("_")
-       if(this.index!=pages[2]){
-        var page=pages[0]+'_'+pages[1]+'_'+this.index+'_#'
-        var ip=localStorage.getItem('ip_addr')
-            this.$store.state.stompClient.send('/app/page/'+ip+'/'+page,{})
-       }}
+      // var pageL= localStorage.getItem('page')
+      // var pages=pageL.split("_")
+        var page='#-#-'+this.index+'-#'
+            this.$store.state.stompClient.send('/app/page/'+page,{})
+       }
       }
   },
    computed: {
     secondPage(){
          debugger
         return this.$store.state.secondPage
-       },  
+       }, 
+       stompinit(){
+       return this.$store.state.stompClient
+    } 
   },
   watch:{
+     stompinit(newVal,oldVal){
+      this.stompClient=newVal
+    },
     secondPage(newVal,oldVal){
       debugger
         console.log("newVal="+newVal)
          console.log("oldVal="+oldVal)
              if(newVal!==oldVal){
-          var pagesindexs=newVal.split("_")
-           //this.activeIndex=pagesindexs[2]
+          var pagesindexs=newVal.split("-")
            if(pagesindexs[2]==1)this.activeIndex='1'
            if(pagesindexs[2]==2)this.activeIndex='2-1'
            if(pagesindexs[2]==3)this.activeIndex='2-2'
@@ -122,20 +126,6 @@ export default {
           }
     },
   },
-   computed: {
-    stompinit(){
-       return this.$store.state.stompClient
-    }
-  },
-  watch:{
-    stompinit(newVal,oldVal){
-      this.stompClient=newVal
-    }
-  },
 }
 
 </script>
-<style rel="stylesheet/scss" lang="scss">
-
-
-</style>

@@ -1,6 +1,6 @@
 <template>
-  <div class="" > 
-      <div style="width:100%;height:560px;background: rgb(238, 255, 247);">
+  <div class="" style="background: rgb(238, 255, 247);"> 
+      <div style="width:1080px;height:1030px;background: rgb(238, 255, 247);">
          <div class="container" title="定标点" style="width:918px; height:auto; float:left;margin-left:10px">
          <el-radio-group v-model="radio"  style="margin-top:10px">
            <table>
@@ -12,24 +12,24 @@
                  <el-radio :label="2" class="inradio" title="QCIT.Config.Injection" style="width: 275px !important;" border>进样电机推试管至进样样本架出口检测</el-radio><!-- Qcit.MB.emergency -->
                </td>
                <td>
-                  <el-radio :label="3" class="inradio" title="定标点" style="width: 210px !important;" border>急诊至进样入口&emsp;&emsp;&emsp;&emsp;</el-radio><!-- Qcit.MB.intTransport -->
+                  <el-radio :label="3" class="inradio" title="QCIT.Config.emergency" style="width: 210px !important;" border>急诊至进样入口&emsp;&emsp;&emsp;&emsp;</el-radio><!-- Qcit.MB.intTransport -->
                </td>
                <td>
-                 <el-radio :label="4" class="inradio" title="定标点" style="width: 224px !important;" border>转移仓至扫码等待区&emsp;&emsp;&emsp;</el-radio><!-- Qcit.MB.intTrack -->
+                 <el-radio :label="4" class="inradio" title="QCIT.Config.InScan" style="width: 224px !important;" border>转移仓至扫码等待区&emsp;&emsp;&emsp;</el-radio><!-- Qcit.MB.intTrack -->
                </td>
              </tr>
               <tr>
                <td>
-                 <el-radio :label="5" class="inradio" title="定标点"  style="width: 196px !important;"  border>扫码转移电机移动距离</el-radio><!-- Qcit.MB.outTrack -->
+                 <el-radio :label="5" class="inradio" title="QCIT.Config.ScanCode"  style="width: 196px !important;"  border>扫码转移电机移动距离</el-radio><!-- Qcit.MB.outTrack -->
                </td>
                <td>
-                 <el-radio :label="6" class="inradio" title="定标点" style="width: 275px !important;" border>转移电机推试管至进样皮带&emsp;&emsp;&emsp;&emsp;</el-radio><!-- Qcit.MB.outTrack -->
+                 <el-radio :label="6" class="inradio" title="QCIT.Config.Transfer" style="width: 275px !important;" border>转移电机推试管至进样皮带&emsp;&emsp;&emsp;&emsp;</el-radio><!-- Qcit.MB.outTrack -->
                </td>
                 <td>
-                 <el-radio :label="7" class="inradio" title="定标点" style="width: 210px !important;" border>进样皮带入口至入口检测</el-radio><!-- Qcit.MB.outTrack -->
+                 <el-radio :label="7" class="inradio" title="QCIT.Config.InBelt" style="width: 210px !important;" border>进样皮带入口至入口检测</el-radio><!-- Qcit.MB.outTrack -->
                </td>
                <td>
-                 <el-radio :label="8" class="inradio" title="定标点"  style="width: 224px !important;" border>进样皮带入口检测至换轨车</el-radio><!-- Qcit.MB.outTrack -->
+                 <el-radio :label="8" class="inradio" title="QCIT.Config.BeltToTrack"  style="width: 224px !important;" border>进样皮带入口检测至换轨车</el-radio><!-- Qcit.MB.outTrack -->
                </td>
              </tr>
              <tr>
@@ -54,7 +54,7 @@
                  <el-radio :label="14" class="inradio" title="QCIT.Config.iProToBack" style="width: 275px !important;" border>递进-回收入口&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</el-radio><!-- Qcit.MB.inrecovery -->
                </td>
                 <td>
-                  <el-radio :label="15" class="inradio" title="QCIT.Config.iProStop" style="width: 210px !important;" border>回收入口-回收卸载&emsp;&emsp;&emsp;</el-radio> <!-- Qcit.MB.recoveryUnload -->
+                  <el-radio :label="15" class="inradio" title="QCIT.Config.backOver" style="width: 210px !important;" border>回收入口-回收卸载&emsp;&emsp;&emsp;</el-radio> <!-- Qcit.MB.recoveryUnload -->
                </td>
                  <td>
                    <el-radio :label="16" class="inradio" title="QCIT.Config.Tubewidth" style="width: 224px !important;" border>试管宽度&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</el-radio> <!-- Qcit.MB.recoveryUnload --> 
@@ -116,8 +116,8 @@
     :data="tableData2"
     tooltip-effect="dark"
     style="width: 100%"
-    @selection-change="handleSelectionChange"  >
-
+     >
+ <!-- @selection-change="handleSelectionChange" -->
     <el-table-column
       type="selection"
       width="50" >
@@ -132,7 +132,7 @@
       label="Forward"
       width="80">
              <template slot-scope="scope">
-                  <el-input type="text" v-model="scope.row.forward" class="cell-input"/>
+                  <el-input type="text" v-model="scope.row.forward" class="cell-input" :disabled="true"/>
                 </template>
     </el-table-column>
      <el-table-column
@@ -140,7 +140,7 @@
       label="motorId"
       width="80" v-if="show">
        <template slot-scope="scope">
-                  <el-input type="text" v-model="scope.row.motorId" class="cell-input"/>
+                  <el-input type="text" v-model="scope.row.motorId" class="cell-input"  />
         </template>
     </el-table-column>
     <el-table-column
@@ -148,7 +148,7 @@
       label="Reverse"
       width="80">
        <template slot-scope="scope">
-                  <el-input type="text" v-model="scope.row.reverse" class="cell-input"/>
+                  <el-input type="text" v-model="scope.row.reverse" class="cell-input"  :disabled="true"/>
                 </template>
     </el-table-column>
      <el-table-column
@@ -156,7 +156,7 @@
       label="zero"
       width="50">
           <template slot-scope="scope">
-             <el-checkbox v-model="scope.row.zero" v-bind="{'checked': scope.row.zero? true : false}" @change="v => {update(scope.row, v, 'zero')}"></el-checkbox>
+             <el-checkbox v-model="scope.row.zero" v-bind="{'checked': scope.row.zero? true : false}" @change="v => {update(scope.row, v, 'zero')}"  :disabled="true"></el-checkbox>
          </template>
     </el-table-column>
     <el-table-column
@@ -164,7 +164,7 @@
       label="零位坐标"
       width="80">
              <template slot-scope="scope">
-                  <el-input type="text" v-model="scope.row.zeroCoord" class="cell-input"/>
+                  <el-input type="text" v-model="scope.row.zeroCoord" class="cell-input"  :disabled="true"/>
                 </template>
     </el-table-column>
     <el-table-column
@@ -274,29 +274,50 @@ export default {
         console.log(key, keyPath);
       },
       readCoord(opt){//0 读取坐标参数 ;1读取设备坐标参数 2读取坐标 ;3读取设备坐标
+        Bus.$emit('progres',true) 
+        this.$store.state.resinfo="读取坐标开始"
        var _this = this
        _this.coord=''
          this.getCoordPoint()
           this.stompClient.send('/app/readCoord/'+opt+'/'+this.motorId+'/'+this.coodPoint)
            Bus.$on('readCoord',function(val){//监听fi
-           debugger
+           
               _this.coord=val
           })
       },
        writeCoord(opt){//0 保存本地定标参数 ;1保存设备定标参数; 2保存本地定标 3保存设备定标
+       if(this.checkNum(this.coord)==false){
+                return;
+       }
+         Bus.$emit('progres',true) 
+        this.$store.state.resinfo="写入坐标开始"
        var _this = this;
          this.getCoordPoint()
-          this.stompClient.send('/app/writeCoord/'+opt+'/'+this.motorId+'/'+this.coodPoint+'/'+coord)
+          this.stompClient.send('/app/writeCoord/'+opt+'/'+this.motorId+'/'+this.coodPoint+'/'+this.coord)
       },
+      checkNum:function(val) {
+             var reg = /^[+-]?\d*\.?\d{1,3}$/;
+              if (!reg.test(val)) {
+              alert("请输入正确的数值")
+                return false;
+               }
+            },
       deleteCoord(){
+          Bus.$emit('progres',true) 
+         this.$store.state.resinfo="删除坐标开始"
          this.getCoordPoint()
          this.stompClient.send('/app/deleteCoord/'+this.coodPoint)
       },
       loadCoord(opt){
+          Bus.$emit('progres',true) 
+        if(opt==0){
+           this.$store.state.resinfo="一键下载设备参数至本地开始"
+        }else{
+          this.$store.state.resinfo="一键上传本地参数至设备开始"
+        }
          this.stompClient.send('/app/loadCoord/'+opt)
       },
       getCoordPoint(){
-        debugger
          var _this = this;// `这一步很重要`
          if(_this.radio==1){
            this.coodPoint='QCIT.Config.InjectionMax'
@@ -340,20 +361,22 @@ export default {
          }else if(_this.radio==13){
            this.coodPoint='QCIT.Config.iProStop'
            this.motorId=6
-         } else if(_this.radio==13){
+         } else if(_this.radio==14){
            this.coodPoint='QCIT.Config.iProToBack'
            this.motorId=4
          }else if(_this.radio==15){
-           this.coodPoint='QCIT.Config.iProStop'
+           this.coodPoint='QCIT.Config.backOver'
            this.motorId=2
          }
       },
       loadselect(datatable){
+          Bus.$emit('progres',true) 
+         this.$store.state.resinfo="定标界面加载电机开始"
        console.log('loadallmotor')
         this.stompClient.send('/app/loadMotor')
           var _this = this;// `这一步很重要`
           Bus.$on('allmotor',function(val){//监听first组件的txt事件
-            debugger
+            
             var motorlist=val.split(",")
             this.allmotor=motorlist
             // var  tr= '<tr>'+
@@ -416,7 +439,15 @@ export default {
       )
     },
     checkDetail(scopes,opt){
-      debugger;
+      debugger
+      if(opt<3){
+         if(this.checkNum(scopes.coord)==false){
+                return;
+       }
+      }
+     
+        Bus.$emit('progres',true) 
+       this.$store.state.resinfo="定标界面电机运行开始"
        var motor=scopes.motorId
        var coor=scopes.coord
       this.stompClient.send('/app/motorOpt/'+motor+'/'+coor+'/'+opt)
@@ -429,16 +460,18 @@ export default {
        }
     },
     handleAddItem() { 
+        Bus.$emit('progres',true) 
+      this.$store.state.resinfo="定标界面电机查询开始"
       var _this = this;// `这一步很重要`
      var kk= this.$refs.multipleTable.selection
        _this.motorinfo=kk
       var motorArray=new Array();
       //  for(var i=0;i<kk.length;i++){
-      //   debugger
+      //   
       //    this.stompClient.send('/app/searchMotor/'+kk[i].motorId)
       //    _this.idx=i
       //     Bus.$on('searchMotor',(response) => {
-      //     debugger
+      //     
       //       let obj=JSON.parse(response)
       //       for(let key in obj) {
       //          console.log('_this.idx'+_this.idx)
@@ -462,15 +495,15 @@ export default {
        //   }
        
      for(var i=0;i<kk.length;i++){
-        debugger
+        
         motorArray[i]=kk[i].motorId
      }
       this.stompClient.send('/app/searchMotor/'+motorArray)
        Bus.$on('searchMotor',function(val){//监听first组件的txt事件
-           debugger
+           
            let obj=JSON.parse(val)
             for(let key in obj) {
-              debugger
+              
                let obj1=JSON.parse(obj[key])
                 console.log('obj1='+obj1)
                for(var i=0;i<kk.length;i++){
@@ -487,7 +520,17 @@ export default {
            }
         })
     }
-  }
+  },
+  computed: {
+    stompinit(){
+       return this.$store.state.stompClient
+    },
+  },
+  watch:{
+    stompinit(newVal,oldVal){
+      this.stompClient=newVal
+    },
+  },
 }
 
 </script>

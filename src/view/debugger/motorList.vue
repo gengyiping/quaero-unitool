@@ -26,34 +26,45 @@ export default {
   },
   mounted() {
     this.stompClient= this.$store.state.stompClient;
-    debugger
+    
     this.loadselect();//加载电机
     this.motorId=this.$store.state.motorId;
   },
   methods: {
     loadselect(){
+       this.$store.state.resinfo="电机界面加载电机开始"
        console.log('loadMotor')
         this.stompClient.send('/app/loadMotor')
           var _this = this;// `这一步很重要`
           Bus.$on('allmotor',function(val){//监听first组件的txt事件
           _this.kuList=val.split(",");
+          _this.motorName=_this.kuList[0]
     });
     },
     handleSelect(key, keyPath) {
         console.log(key, keyPath);
       },
    handleCommand(command) {
-       debugger;
+       ;
         var _this = this;// `这一步很重要`
         this.motorName=command
        var motorId= command.split("_")[1]
        this.motorId=motorId
-        // this.$message('click on item ' + command)
-        // this.$message('click on item ' + motorId)
          this.$forceUpdate()
         this.$store.state.motorId=this.motorId
+         this.$store.state.resinfo="您点击了"+this.motorId+"电机"
       }
-  }
+  },
+  computed: {
+    stompinit(){
+       return this.$store.state.stompClient
+    },
+  },
+  watch:{
+    stompinit(newVal,oldVal){
+      this.stompClient=newVal
+    },
+  },
 }
 </script>
 <style rel="stylesheet/scss" lang="scss">
