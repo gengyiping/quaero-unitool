@@ -1,7 +1,7 @@
 <template>
   <div class="" style="background: rgb(238, 255, 247);"> 
       <div style="width:1080px;height:1030px;background: rgb(238, 255, 247);">
-         <div class="container" title="定标点" style="width:950px; height:auto; float:left;margin-left:10px">
+         <div class="container" title="定标点" style="width:918px; height:auto; float:left;margin-left:10px">
          <el-radio-group v-model="radio"  style="margin-top:10px">
            <table>
              <tr>
@@ -48,7 +48,7 @@
              </tr>
               <tr>
                <td>
-                  <el-radio :label="13" class="inradio" title="QCIT.Config.iProStop"  style="width: 220px !important;" border>递进收起&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</el-radio><!-- Qcit.MB.stepbyStep -->
+                  <el-radio :label="13" class="inradio" title="QCIT.Config.iProStop"  style="width: 220px !important;" border>递进收起&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</el-radio><!-- Qcit.MB.stepbyStep -->
                </td>
                 <td>
                  <el-radio :label="14" class="inradio" title="QCIT.Config.iProToBack" style="width: 275px !important;" border>递进-回收入口&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</el-radio><!-- Qcit.MB.inrecovery -->

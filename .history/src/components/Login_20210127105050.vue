@@ -515,7 +515,6 @@ getUserIP (onNewIP) { // 获取ip地址
            _this.stompClient.subscribe('/user/'+_this.iplocal+'/'+_this.uid+'/error', function (data) {
              debugger
             _this.getData(data.body);
-
           });
         }, function (error) {
            console.log('-------请重新连接！------------')
@@ -569,7 +568,6 @@ getUserIP (onNewIP) { // 获取ip地址
           message:date.data.message,
           type: 'success'
           });
-           this.$store.state.resinfo=date.desc
             break;
         case 404:
             alert("404");

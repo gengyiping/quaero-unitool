@@ -43,7 +43,7 @@
                <td colspan="2" ><el-input v-model="barcode" placeholder="设置条码仪参数" style="width: 92%;"></el-input></td>
              </tr>
               <tr>
-               <td colspan="2" ><el-button type="primary" style="width: 92%;" @click="setBarCode()" plain>设置条码仪参数</el-button></td>
+               <td colspan="2" ><el-button type="primary" style="width: 125px;" @click="transferMove()" plain>区域转移</el-button></el-input></td>
              </tr>
              <tr>
                <td>
@@ -435,11 +435,6 @@ export default {
       },
       ledEdit(ledval){
         this.ledval = ledval;
-      },
-      setBarCode(){//设置条码仪参数
-       Bus.$emit('progres',true) 
-         this.$store.state.resinfo="开启设置条码仪参数"
-         this.stompClient.send('/app/setbarCode/'+this.barcode)
       },
       handleSelect(key, keyPath) {
         console.log(key, keyPath);

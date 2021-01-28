@@ -27,6 +27,9 @@
                <td colspan="2" ><el-input v-model="chid" placeholder="获取芯片ID" style="width: 92%;"></el-input></td>
              </tr>
               <tr>
+               <td colspan="2" ><el-input v-model="chid" placeholder="设置条码仪参数" style="width: 92%;"></el-input></td>
+             </tr>
+              <tr>
                <td>
                  <el-select v-model="servalue" placeholder="请选择" style="width: 125px;" @change="serEdit"> 
                       <el-option
@@ -38,12 +41,6 @@
                  </el-select>
                </td>
                <td><el-button type="primary" style="width: 125px;"  @click="openServer()" plain>{{openval}}</el-button></td>
-             </tr>
-              <tr>
-               <td colspan="2" ><el-input v-model="barcode" placeholder="设置条码仪参数" style="width: 92%;"></el-input></td>
-             </tr>
-              <tr>
-               <td colspan="2" ><el-button type="primary" style="width: 92%;" @click="setBarCode()" plain>设置条码仪参数</el-button></td>
              </tr>
              <tr>
                <td>
@@ -210,7 +207,6 @@ import iconv from 'iconv-lite'
 export default {
   data() {
     return {
-      barcode:'',
        uploadVisible: false,
        imgUrl:require("../../../static/images/QcitS.png"),
       list1: [],
@@ -435,11 +431,6 @@ export default {
       },
       ledEdit(ledval){
         this.ledval = ledval;
-      },
-      setBarCode(){//设置条码仪参数
-       Bus.$emit('progres',true) 
-         this.$store.state.resinfo="开启设置条码仪参数"
-         this.stompClient.send('/app/setbarCode/'+this.barcode)
       },
       handleSelect(key, keyPath) {
         console.log(key, keyPath);

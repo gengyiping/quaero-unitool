@@ -506,16 +506,15 @@ getUserIP (onNewIP) { // 获取ip地址
             });
         
         // 本地订阅
-          _this.stompClient.subscribe('/user/'+_this.iplocal+'/'+_this.uid+'/chat', function (data) {
+          _this.stompClient.subscribe('/user/'+_this.iplocal+'/' + _this.uid + '/chat', function (data) {
            
               _this.handleMessage(getData(data.body));
           });
 
         // 错误信息订阅
-           _this.stompClient.subscribe('/user/'+_this.iplocal+'/'+_this.uid+'/error', function (data) {
-             debugger
+           _this.stompClient.subscribe('/user/'+_this.iplocal+'/' + _this.uid + '/error', function (data) {
+             
             _this.getData(data.body);
-
           });
         }, function (error) {
            console.log('-------请重新连接！------------')
@@ -558,7 +557,7 @@ getUserIP (onNewIP) { // 获取ip地址
         var obj = JSON.parse(data);
         this.codeMapping(obj);
         this.returnobj=obj.data
-        // this.$store.state.resinfo=this.returnobj.message
+         this.$store.state.resinfo=this.returnobj.message
           Bus.$emit('progres',false) 
      },
     codeMapping(date) {//响应码映射
@@ -569,7 +568,6 @@ getUserIP (onNewIP) { // 获取ip地址
           message:date.data.message,
           type: 'success'
           });
-           this.$store.state.resinfo=date.desc
             break;
         case 404:
             alert("404");

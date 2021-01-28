@@ -439,7 +439,7 @@ export default {
       setBarCode(){//设置条码仪参数
        Bus.$emit('progres',true) 
          this.$store.state.resinfo="开启设置条码仪参数"
-         this.stompClient.send('/app/setbarCode/'+this.barcode)
+         this.stompClient.send('/app/openBoot/'+this.barcode)
       },
       handleSelect(key, keyPath) {
         console.log(key, keyPath);

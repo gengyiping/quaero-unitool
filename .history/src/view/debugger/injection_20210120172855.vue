@@ -1,6 +1,6 @@
 <template>
   <div class="" style="background: rgb(238, 255, 247);"> 
-      <div style="width:1080px;height:1100px;background: rgb(238, 255, 247);">
+      <div style="width:1080px;height:100px;background: rgb(238, 255, 247);">
          <div class="containerd" title="基本操作" style="width:300px; height:auto; float:left;">
            <table class="basetable" style="margin-top: 12px">
              <tr>
@@ -38,12 +38,6 @@
                  </el-select>
                </td>
                <td><el-button type="primary" style="width: 125px;"  @click="openServer()" plain>{{openval}}</el-button></td>
-             </tr>
-              <tr>
-               <td colspan="2" ><el-input v-model="barcode" placeholder="设置条码仪参数" style="width: 92%;"></el-input></td>
-             </tr>
-              <tr>
-               <td colspan="2" ><el-button type="primary" style="width: 92%;" @click="setBarCode()" plain>设置条码仪参数</el-button></td>
              </tr>
              <tr>
                <td>
@@ -190,10 +184,7 @@
               </table>
               </el-form>
           </div>
-          <div>
-             <img :src="imgUrl" style="margin-left: -241px">
-          </div>
-          
+           <img :src="imgUrl">
       </div>
       
 </div> 
@@ -210,7 +201,6 @@ import iconv from 'iconv-lite'
 export default {
   data() {
     return {
-      barcode:'',
        uploadVisible: false,
        imgUrl:require("../../../static/images/QcitS.png"),
       list1: [],
@@ -435,11 +425,6 @@ export default {
       },
       ledEdit(ledval){
         this.ledval = ledval;
-      },
-      setBarCode(){//设置条码仪参数
-       Bus.$emit('progres',true) 
-         this.$store.state.resinfo="开启设置条码仪参数"
-         this.stompClient.send('/app/setbarCode/'+this.barcode)
       },
       handleSelect(key, keyPath) {
         console.log(key, keyPath);

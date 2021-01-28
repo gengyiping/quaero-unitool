@@ -1,12 +1,12 @@
 <template>
   <div class="" style="background: rgb(238, 255, 247);"> 
       <div style="width:1080px;height:1030px;background: rgb(238, 255, 247);">
-         <div class="container" title="定标点" style="width:950px; height:auto; float:left;margin-left:10px">
+         <div class="container" title="定标点" style="width:918px; height:auto; float:left;margin-left:10px">
          <el-radio-group v-model="radio"  style="margin-top:10px">
            <table>
              <tr>
                <td>
-                 <el-radio :label="1" class="inradio" title="QCIT.Config.InjectionMax"  style="width: 220px !important;"  border>进样电机推试管到底&emsp;&emsp;&nbsp;&emsp;</el-radio><!-- Qcit.MB.injection -->
+                 <el-radio :label="1" class="inradio" title="QCIT.Config.InjectionMax"  style="width: 196px !important;"  border>进样电机推试管到底&emsp;&emsp;&nbsp;</el-radio><!-- Qcit.MB.injection -->
                </td>
                <td>
                  <el-radio :label="2" class="inradio" title="QCIT.Config.Injection" style="width: 275px !important;" border>进样电机推试管至进样样本架出口检测</el-radio><!-- Qcit.MB.emergency -->
@@ -20,7 +20,7 @@
              </tr>
               <tr>
                <td>
-                 <el-radio :label="5" class="inradio" title="QCIT.Config.ScanCode"  style="width: 220px !important;"  border>扫码转移电机移动距离&emsp;&emsp;&emsp;</el-radio><!-- Qcit.MB.outTrack -->
+                 <el-radio :label="5" class="inradio" title="QCIT.Config.ScanCode"  style="width: 196px !important;"  border>扫码转移电机移动距离</el-radio><!-- Qcit.MB.outTrack -->
                </td>
                <td>
                  <el-radio :label="6" class="inradio" title="QCIT.Config.Transfer" style="width: 275px !important;" border>转移电机推试管至进样皮带&emsp;&emsp;&emsp;&emsp;</el-radio><!-- Qcit.MB.outTrack -->
@@ -34,7 +34,7 @@
              </tr>
              <tr>
                <td>
-                 <el-radio :label="9" class="inradio" title="QCIT.Config.TrackToBackBelt"  style="width: 220px !important;" border>进样皮带出口至返回皮带入口</el-radio><!-- Qcit.MB.outTrack -->
+                 <el-radio :label="9" class="inradio" title="QCIT.Config.TrackToBackBelt"  style="width: 196px !important;" border>进样皮带至返回皮带&emsp;&emsp;&emsp;</el-radio><!-- Qcit.MB.outTrack -->
                </td>
                <td>
                  <el-radio :label="10" class="inradio" title="QCIT.Config.TrackToProg" style="width: 275px !important;" border>返回皮带入口至递进初始位&emsp;&emsp;&emsp;&emsp;</el-radio><!-- Qcit.MB.outTrack -->
@@ -48,7 +48,7 @@
              </tr>
               <tr>
                <td>
-                  <el-radio :label="13" class="inradio" title="QCIT.Config.iProStop"  style="width: 220px !important;" border>递进收起&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</el-radio><!-- Qcit.MB.stepbyStep -->
+                  <el-radio :label="13" class="inradio" title="QCIT.Config.iProStop"  style="width: 196px !important;" border>递进收起&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</el-radio><!-- Qcit.MB.stepbyStep -->
                </td>
                 <td>
                  <el-radio :label="14" class="inradio" title="QCIT.Config.iProToBack" style="width: 275px !important;" border>递进-回收入口&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</el-radio><!-- Qcit.MB.inrecovery -->
@@ -377,7 +377,7 @@ export default {
           var _this = this;// `这一步很重要`
           Bus.$on('allmotor',function(val){//监听first组件的txt事件
           debugger
-
+          
             var motorlist=val.split(",")
             this.allmotor=motorlist
            for(var i=0;i<motorlist.length;i++){
@@ -391,9 +391,7 @@ export default {
              obj.coord=0
              obj.motorId=motor[1]
               console.log('motorId='+obj.motorId)
-              if(datatable.length<9){//防止电机界面加载电机时此处重复加载
-                datatable.push(obj)
-              }
+             datatable.push(obj)
            }
       });
      },

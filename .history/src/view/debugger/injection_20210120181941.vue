@@ -437,9 +437,7 @@ export default {
         this.ledval = ledval;
       },
       setBarCode(){//设置条码仪参数
-       Bus.$emit('progres',true) 
-         this.$store.state.resinfo="开启设置条码仪参数"
-         this.stompClient.send('/app/setbarCode/'+this.barcode)
+
       },
       handleSelect(key, keyPath) {
         console.log(key, keyPath);
