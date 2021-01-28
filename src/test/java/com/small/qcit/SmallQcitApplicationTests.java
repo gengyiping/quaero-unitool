@@ -1,12 +1,12 @@
 package com.small.qcit;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+//import org.junit.jupiter.api.Test;
+//import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+//@SpringBootTest
 class SmallQcitApplicationTests {
 
-	@Test
+//	@Test
 	void contextLoads() {
 	}
 
