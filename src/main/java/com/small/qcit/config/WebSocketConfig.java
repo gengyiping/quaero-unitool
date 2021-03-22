@@ -1,34 +1,30 @@
 package com.small.qcit.config;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import javax.annotation.Resource;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-import org.springframework.web.socket.messaging.StompSubProtocolErrorHandler;
+import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 
-import com.small.qcit.Log.LoggerQueue;
+import com.small.qcit.constant.StompConstant;
+import com.small.qcit.interceptor.WebSocketInterceptor;
+
 
 /**
  * @title WebSocketConfig
  * @Description 描述 websocket的配置类 开启 ServerPoint
- * @Date 2019年06月05日 10:57
- * @Copyright 2019-2020 www.epri.sgcc.com.cn All rights reserved.
  */
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 //	 @Autowired
 //     private SimpMessagingTemplate messagingTemplate;
+	@Resource
+    private WebSocketInterceptor webSocketInterceptor;
     /**
      * 注册stomp端点，,并映射指定的url，主要是起到连接作用
      *
@@ -38,7 +34,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry stompEndpointRegistry) {
     	//注册一个STOMP的endpoint,并指定使用SockJS协议
     	stompEndpointRegistry
-                .addEndpoint("/webSocket")  //端点名称
+                .addEndpoint(StompConstant.STOMP_ENDPOINT)  //端点名称
                 //.setHandshakeHandler() 握手处理，主要是连接的时候认证获取其他数据验证等
                 //.addInterceptors() //拦截处理，和http拦截类似
                 .setAllowedOrigins("*") //跨域
@@ -58,12 +54,38 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         //这里注册两个，主要是目的是将广播和队列分开。
         //registry.enableStompBrokerRelay().setRelayHost().setRelayPort() 其他方式
     	//点对点应配置一个/user消息代理，广播式应配置一个/topic消息代理,群发（mass），单独（alone）
-        registry.enableSimpleBroker("/topic","/user","/mass","/alone");
-        //设置客户端前缀 即@MessageMapping
+        registry.enableSimpleBroker(StompConstant.STOMP_TOPIC,StompConstant.STOMP_USER,"/mass","/alone");
+    	//registry.enableSimpleBroker(StompConstant.STOMP_TOPIC, StompConstant.STOMP_USER);
+    	//设置客户端前缀 即@MessageMapping
         registry.setApplicationDestinationPrefixes("/app");
         //点对点发送前缀,不设置的话，默认也是/user/
         //registry.setUserDestinationPrefix("/user");
     }
+    
+    /**
+     * 注册消息拦截器
+     *
+     * @param registration
+     */
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(webSocketInterceptor);
+    }
+
+
+     /*将客户端渠道拦截器加入spring ioc容器*/
+//    @Bean
+//    public UserInterceptor createUserInterceptor() {
+//        //return new UserInterceptor();
+//    }
+
+
+//    @Override
+//    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+//        registration.setMessageSizeLimit(500 * 1024 * 1024);
+//        registration.setSendBufferSizeLimit(1024 * 1024 * 1024);
+//        registration.setSendTimeLimit(200000);
+//    }
     /**
      * WebSocket Error 处理
      *

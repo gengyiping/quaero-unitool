@@ -1,8 +1,5 @@
 package com.small.qcit.test;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 public class SomeThread extends Thread {
 
 	private SomeMethod m;

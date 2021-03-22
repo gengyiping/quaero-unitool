@@ -60,6 +60,20 @@ public class User implements Principal, Serializable {
 	 * 三级级界面
 	 */
 	private String thirdPage;
+	/**
+	 * 操作
+	 */
+	private String actionDo;
+	/**
+	 * 操作是否完成
+	 */
+	private boolean actionfinish;
+	/**
+	 * 连接的Ip
+	 */
+	private String ip;
+	
+	
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub

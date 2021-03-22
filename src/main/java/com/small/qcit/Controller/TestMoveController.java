@@ -1,20 +1,14 @@
 package com.small.qcit.Controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.security.Principal;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 import org.dom4j.DocumentException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quest.software.bus4j.datatype.CmdCodeException;
@@ -23,21 +17,26 @@ import com.quest.software.bus4j.module.ExecuteException;
 import com.small.qcit.domain.dto.User;
 @RestController
 public class TestMoveController  extends optContorller{
-	@Autowired
-    private static SimpMessagingTemplate template;
+//	@Autowired
+//    private static SimpMessagingTemplate template;
 	 @MessageMapping("/testMove/{transId}")
   public void testMove(@DestinationVariable("transId") String transId,User user) {
 		     System.out.println("区域转移--------");
 		     String chipId="";
 				try {
+					if("3".equals(transId)){
+						List<String> strings=api.iScanBarcode();
+						for(String s:strings) {
+							chipId=chipId+s+";";
+						}
+						successSend("/user/"+user.getIp()+"/testMove/alone/getResponse", chipId, user);
+					}else {
 					if("0".equals(transId)){
 						api.iAddInject();	
 					}else if("1".equals(transId)){
 						api.iMoveToCache();
 					}else if("2".equals(transId)){
 						api.iemergInject();
-					}else if("3".equals(transId)){
-						List<String> strings=api.iScanBarcode();
 					}else if("4".equals(transId)){
 						api.injectMove();
 					}else if("5".equals(transId)){
@@ -54,7 +53,8 @@ public class TestMoveController  extends optContorller{
 						api.iBackTobasket();
 					}
 					 chipId="区域转移成功";
-						successSend("/user/testMove/alone/getResponse", chipId, user);
+						successSend("/user/"+user.getIp()+"/testMove/alone/getResponse", chipId, user);
+					}
 				} catch (Exception e) {
 					errorSend(e, user);
 				}
@@ -62,7 +62,7 @@ public class TestMoveController  extends optContorller{
 	 private static boolean suspend=true;
 	 private static boolean stoped=false;
 	 @MessageMapping("/testMoveStop/{suspstate}")
-	// @SendTo("/user/testMoveStop/alone/getResponse")
+	// @SendTo("/user/"+user.getIp()+"/testMoveStop/alone/getResponse")
   public void testMoveStop(@DestinationVariable("suspstate") String suspstate,User user) {
 		     System.out.println("流程暂停或继续或停止--------");
 		     //String chipId="";
@@ -74,7 +74,7 @@ public class TestMoveController  extends optContorller{
 					}else if("2".equals(suspstate)){
 						stoped=true;
 					}
-					//successSend("/user/testMoveStop/alone/getResponse", chipId, user);
+					//successSend("/user/"+user.getIp()+"/testMoveStop/alone/getResponse", chipId, user);
 				} catch (Exception e) {
 					errorSend(e, user);
 				}
@@ -88,13 +88,13 @@ public class TestMoveController  extends optContorller{
 		}
 		if(stoped){return;}
 	}
-	    private static Semaphore injectTrans = null;//进样至进样转移
-	    private static Semaphore inBletTrans = null;//进样转移至进样皮带
-	    private static Semaphore moveBletTrans = null;//进样转移至进样皮带
-	    private static Semaphore outBletTrans = null;//返回入口至递进电机
+	    private  Semaphore injectTrans = null;//进样至进样转移
+	    private  Semaphore inBletTrans = null;//进样转移至进样皮带
+	    private  Semaphore moveBletTrans = null;//进样转移至进样皮带
+	    private  Semaphore outBletTrans = null;//返回入口至递进电机
 	    public static ExecutorService executor;
-	    public static int num=0;//进样值
-	    public static int sgnum=0;//被赋的进样值，每减一次用来判断是否最后一个
+	    public  int num=0;//进样值
+	    public  int sgnum=0;//被赋的进样值，每减一次用来判断是否最后一个
 	    
 	 @MessageMapping("/testMoveone")
   public void testMoveone(User user) {
@@ -107,9 +107,11 @@ public class TestMoveController  extends optContorller{
 					   inBletTrans = new Semaphore(1);//进样转移至进样皮带
 					   moveBletTrans = new Semaphore(1);//进样转移至进样皮带
 					   outBletTrans = new Semaphore(1);//返回入口至递进电机
+					   num=0;
+					   sgnum=0;
 					complex(user);
 					 chipId="流程转移结束";
-					successSend("/user/testMoveone/alone/getResponse", chipId, user);
+					successSend("/user/"+user.getIp()+"/testMoveone/alone/getResponse", chipId, user);
 				} catch (Exception e) {
 					errorSend(e, user);
 				}
@@ -122,13 +124,15 @@ public class TestMoveController  extends optContorller{
 	     public  void complex(User user) throws Exception{
 	    	 executor=Executors.newFixedThreadPool(25);
 	     	int djnum=0;//用来判断是不是第一个进样的
-	     	 api.init();
+	     	// api.init();
+//	     	 Thread.sleep(5000);
 	     	movestate();
 	     	 api.allReset();
 	     	movestate();
 	     	num= api.iAddInject();
 	     	movestate();
 	     	sgnum=num;
+			successSend("/user/"+user.getIp()+"/scanBarcode/alone/getResponse", "试管数量="+num, user);
 	     	System.out.println("试管数量="+num);
 	     	while(true){
 	     		if(sgnum>0){
@@ -136,17 +140,19 @@ public class TestMoveController  extends optContorller{
 	     				api.iemergInject();//急诊进样 
 	     				num++;
 	     				sgnum++;
+						successSend("/user/"+user.getIp()+"/scanBarcode/alone/getResponse", "急诊进样：+1", user);
 	     				movestate();
 	     			}else{
-	     				if(djnum!=0){
+	     				//if(djnum!=0){
 	     	     			api.iMoveToCache();
 	     	     			movestate();
-	     	     		 }
+	     	     		// }
 	     			}
 	     			if(djnum==(num-1)){
 	              		 new Thread() {
 	               			public void run() {
 	               				try {
+	               					Thread.sleep(3000);
 	          						api.motorReset(0, 3);
 	          						movestate();
 	          					} catch (CmdCodeException | ErrCodeException | ExecuteException | IOException
@@ -188,7 +194,7 @@ public class TestMoveController  extends optContorller{
 	    			 for (int i = 0; i < board.size(); i++) {
 	    					texts = texts + board.get(i) + "\r\n";
 	    			 }
-					successSend("/user/scanBarcode/alone/getResponse", texts, user);
+					successSend("/user/"+user.getIp()+"/scanBarcode/alone/getResponse", texts, user);
 	    	    	 movestate();
 	               	 moveBletTrans.acquire();
 	               	 api.injectMove();
@@ -217,6 +223,7 @@ public class TestMoveController  extends optContorller{
 	            	 for(int i=0;i<4;i++){
 	               		api.iProOne();	
 	               		movestate();
+	               		Thread.sleep(2000);
 	               	}
 	            	 roam(num,InjectToBack.IProToInBack,user);
 	            	 movestate();
@@ -224,12 +231,17 @@ public class TestMoveController  extends optContorller{
 	             case IProToInBack://递进至返回入口
 	            	 api.iProToBack();
 	            	 movestate();
-	            	 outBletTrans.release();
 	            	 roam(num,InjectToBack.InBackToBackOver,user);
+	            	 outBletTrans.release();
 	            	 movestate();
 	            	 break;
 	             case InBackToBackOver://返回卸载
-	                 api.iBackTobasket();
+	                 int kpsen=api.iBackTobasket();
+	                 if(kpsen==1){
+	                	 throw new Exception("回收入口无试管");
+	                 }else if(kpsen==2){
+	                	 throw new Exception("回收仓提篮满");
+	                 }
 	                 movestate();
 	                 if(num==0){
 	                	 

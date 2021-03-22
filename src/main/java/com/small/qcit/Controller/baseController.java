@@ -1,12 +1,20 @@
 package com.small.qcit.Controller;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.security.Principal;
+import java.sql.Blob;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,32 +22,38 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.Resource;
+import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialException;
 
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.JsonSyntaxException;
 import com.quaero.base.ElementNode;
 import com.quest.common.util.CmdExecUtil;
+import com.quest.software.bus4j.datatype.CmdCodeException;
+import com.quest.software.bus4j.datatype.ErrCodeException;
 import com.quest.software.bus4j.module.Axis;
+import com.quest.software.bus4j.module.ExecuteException;
 import com.quest.software.bus4j.module.motor.Coordinate;
 import com.quest.software.bus4j.module.motor.MotorLostStep;
 import com.small.qcit.domain.dto.User;
-import com.small.qcit.domain.vo.MessageRO;
-import com.small.qcit.domain.vo.MessageVO;
-import com.small.qcit.enums.CodeEnum;
-import com.small.qcit.enums.MessageTypeEnum;
 import com.small.qcit.service.MessageService;
+import com.small.qcit.service.UploadService;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 
 @RestController
+@Slf4j
 public class baseController extends optContorller {
 	@Resource
 	private MessageService messageService;
+	 @Resource
+	private UploadService uploadService;
 
 	public void successSend(String url, String message) {
 
@@ -48,11 +62,12 @@ public class baseController extends optContorller {
 	@MessageMapping("/readloacl")
 	// @SendTo("/user/readloacl/alone/getResponse")
 	public void readloacl(User user) {
+		
 		System.out.println("读取本地ip--------");
 		String chipId = "";
 		try {
-			chipId = api.getPropertys(0, "small_qcit_location", "QCIT.MB.ipPort");
-			successSend("/user/readloacl/alone/getResponse", chipId, user);
+			chipId = api.getPropertys(0, "Ip_qcit_location", "QCIT.MB.ipPort");
+			successSend("/user/"+user.getIp()+"/readloacl/alone/getResponse", chipId, user);
 		} catch (Exception e) {
 			errorSend(e, user);
 		}
@@ -63,9 +78,9 @@ public class baseController extends optContorller {
 		System.out.println("写入本地ip--------");
 		String chipId = "";
 		try {
-			api.setProperty(0, "small_qcit_location", "QCIT.MB.ipPort", ipPort);
+			api.setProperty(0, "Ip_qcit_location", "QCIT.MB.ipPort", ipPort);
 			chipId = "Ip写入本地成功！";
-			successSend("/user/writeloacl/alone/getResponse", chipId, user);
+			successSend("/user/"+user.getIp()+"/writeloacl/alone/getResponse", chipId, user);
 		} catch (Exception e) {
 			errorSend(e, user);
 		}
@@ -77,26 +92,37 @@ public class baseController extends optContorller {
 		String chipId = "";
 		try {
 			String[] ips = ipPort.split(":");
-			api.createIp(0, ips[0]);
-			api.setProperty(0, "small_qcit_location", "QCIT.MB.ipPort", ipPort);
-			chipId = "Ip写入设备成功！";
-			successSend("/user/writeEquipment/alone/getResponse", chipId, user);
-		} catch (Exception e) {
-			errorSend(e, user);
+			try {
+				api.createIp(0, ips[0]);
+			} catch (JsonSyntaxException | CmdCodeException | ErrCodeException | InstantiationException
+					| IllegalAccessException | ExecuteException e) {
+				Exception e1=e;
+				errorSend(e, user);
+				StringWriter sw = new StringWriter();    
+				PrintWriter pw = new PrintWriter(sw);    
+				e1.printStackTrace(pw);
+				if(e1.toString().contains("0x80030003")){
+				api.setProperty(0, "Ip_qcit_location", "QCIT.MB.ipPort", ipPort);
+				api.init();
+				}
+			}
+			chipId = "Ip写入设备完成！";
+			successSend("/user/"+user.getIp()+"/writeEquipment/alone/getResponse", chipId, user);
+		} catch (Exception e2) {
+			errorSend(e2, user);
 		}
 	}
 
 	@MessageMapping("/readEquipment")
-	public String readEquipment(User user) {
+	public void readEquipment(User user) {
 		System.out.println("读取设备ip--------");
 		String chipId = "";
 		try {
 			chipId = api.getIp(0);
-			successSend("/user/readEquipment/alone/getResponse", chipId, user);
+			successSend("/user/"+user.getIp()+"/readEquipment/alone/getResponse", chipId, user);
 		} catch (Exception e) {
 			errorSend(e, user);
 		}
-		return chipId;
 	}
 
 	@MessageMapping("/sensorSearch")
@@ -145,13 +171,47 @@ public class baseController extends optContorller {
 			map.put("22", getSensor(sensor22));
 			long sensor23 = api.getSensorStatus(0, 23);
 			map.put("23", getSensor(sensor23));
+			long sensor24 = api.getSensorStatus(0, 24);
+			map.put("24", getSensor(sensor24));
 			sensorList = JSONObject.fromObject(map).toString();
-			successSend("/user/sensorSearch/alone/getResponse", sensorList, user);
+			successSend("/user/"+user.getIp()+"/sensorSearch/alone/getResponse", sensorList, user);
+		} catch (Exception e) {
+			errorSend(e, user);
+		}
+	}
+	@MessageMapping("/openscan/{sacanval}")
+	public void openscan(@DestinationVariable("sacanval") String sacanval,User user) {
+		System.out.println("---条码仪操作-----");
+		String chipId = "";
+		try {
+			if("0".equals(sacanval)) {
+				api.barcodeCtrl(0, 0, 3);
+				chipId="开启成功";
+			}
+			if("1".equals(sacanval)) {
+				api.barcodeCtrl(0, 0, 1);
+				chipId="关闭成功";
+			}
+			successSend("/user/"+user.getIp()+"/openscan/alone/getResponse", chipId, user);
 		} catch (Exception e) {
 			errorSend(e, user);
 		}
 	}
 
+	@MessageMapping("/setbarCode/{barcode}")
+	public String setBarCode(User user,@DestinationVariable("barcode") String barcode) {
+		System.out.println("设置条码仪参数--------");
+		String chipId = "";
+		try {
+			String val=barcode+"\r\n";
+			api.setScannerParam(0, 0, val, 0xffff);
+			chipId="设置条码仪参数成功";
+			successSend("/user/"+user.getIp()+"/setbarCode/alone/getResponse", chipId, user);
+		} catch (Exception e) {
+			errorSend(e, user);
+		}
+		return chipId;
+	}
 	@MessageMapping("/reset/{motorId}")
 	public void reset(@DestinationVariable("motorId") String motorId, User user) {
 		System.out.println("打开复位--------");
@@ -180,7 +240,7 @@ public class baseController extends optContorller {
 				}
 				chipId += "复位成功";
 			}
-			successSend("/user/reset/alone/getResponse", chipId, user);
+			successSend("/user/"+user.getIp()+"/reset/alone/getResponse", chipId, user);
 		} catch (Exception e) {
 			errorSend(e, user);
 		}
@@ -202,7 +262,7 @@ public class baseController extends optContorller {
 			} else {
 				chipId = "进样、回收提篮在线";
 			}
-			successSend("/user/basket/alone/getResponse", chipId, user);
+			successSend("/user/"+user.getIp()+"/basket/alone/getResponse", chipId, user);
 		} catch (Exception e) {
 			errorSend(e, user);
 		}
@@ -214,7 +274,7 @@ public class baseController extends optContorller {
 		String chipId = "";
 		try {
 			chipId = api.getFirVersion(0, 1);
-			successSend("/user/chip/alone/getResponse", chipId, user);
+			successSend("/user/"+user.getIp()+"/chip/alone/getResponse", chipId, user);
 		} catch (Exception e) {
 			errorSend(e, user);
 		}
@@ -232,7 +292,7 @@ public class baseController extends optContorller {
 				api.setSwFunc(0, 0x5000, 0, 0, 0);
 				chipId = "关闭成功";
 			}
-			successSend("/user/openTftp/alone/getResponse", chipId, user);
+			successSend("/user/"+user.getIp()+"/openTftp/alone/getResponse", chipId, user);
 		} catch (Exception e) {
 			errorSend(e, user);
 		}
@@ -245,7 +305,7 @@ public class baseController extends optContorller {
 		try {
 			api.setSwFunc(0, 0x5003, 1, 0, 0);
 			chipId = "开启远程服务成功";
-			successSend("/user/openRemote/alone/getResponse", chipId, user);
+			successSend("/user/"+user.getIp()+"/openRemote/alone/getResponse", chipId, user);
 		} catch (Exception e) {
 			errorSend(e, user);
 		}
@@ -280,11 +340,25 @@ public class baseController extends optContorller {
 				api.iBackTobasket();
 			}
 			chipId = "区域转移成功";
-			successSend("/user/transferMove/alone/getResponse", chipId, user);
+			successSend("/user/"+user.getIp()+"/transferMove/alone/getResponse", chipId, user);
 		} catch (Exception e) {
 			errorSend(e, user);
 		}
 	}
+	
+	@MessageMapping("/ledcontrl/{ledId}/{heightlight}/{lowlight}")
+	public void ledcontrl(@DestinationVariable("ledId") String ledId,@DestinationVariable("heightlight") String heightlight,@DestinationVariable("lowlight") String lowlight,User user) {
+		System.out.println("led控制--------");
+		String chipId = "";
+		try {
+			long led=api.ctrlLed(0, Integer.valueOf(ledId), Integer.valueOf(heightlight), Integer.valueOf(lowlight));
+			chipId = "控制led成功";
+			successSend("/user/"+user.getIp()+"/ledcontrl/alone/getResponse", chipId, user);
+		} catch (Exception e) {
+			errorSend(e, user);
+		}
+	}
+
 
 	@MessageMapping("/openBoot")
 	public void openBoot(User user) {
@@ -293,7 +367,7 @@ public class baseController extends optContorller {
 		try {
 			api.openBootLoader(0);
 			chipId = "开启固件更新成功";
-			successSend("/user/openBoot/alone/getResponse", chipId, user);
+			successSend("/user/"+user.getIp()+"/openBoot/alone/getResponse", chipId, user);
 		} catch (Exception e) {
 			errorSend(e, user);
 		}
@@ -301,72 +375,391 @@ public class baseController extends optContorller {
 
 	@MessageMapping("/updateBoot/{fileName}/{ip}")
 	public void updateBoot(@DestinationVariable("fileName") String fileName, @DestinationVariable("ip") String ip,
-			User user) {
+			User user) throws Exception {
 		System.out.println("固件更新啦--------");
 		String chipId = "";
+		String kfir=uploadService.getFirPath();
+		if(kfir==null) {
+			successSend("/user/"+user.getIp()+"/updateBoot/alone/getResponse", "无上传固件", user);
+			return;
+		}
 		try {
+			api.openBootLoader(0);
 			String command = System.getProperty("user.dir") + "\\tftp.exe -i -v " + ip + " PUT "
-					+ System.getProperty("user.dir") + "\\qcit\\" + fileName;
+					+kfir;
 			System.out.println("command=" + command);
+			Thread.sleep(5000);
 			boolean cmdflag = CmdExecUtil.runExec(command);
 			if (cmdflag == true) {
 				chipId = "固件更新成功";
+				File dil=new File(kfir);
+				dil.delete();
 			} else {
 				chipId = "固件更新失败";
 			}
-			successSend("/user/updateBoot/alone/getResponse", chipId, user);
+			successSend("/user/"+user.getIp()+"/updateBoot/alone/getResponse", chipId, user);
 
 		} catch (Exception e) {
 			errorSend(e, user);
 		}
 	}
+	private String filepath="";
+	@MessageMapping("/firuploadpath")
+	public void firuploadpath( @RequestBody Filepath path, User user) {
+		System.out.println("固件更新啦--------");
+		String chipId = "";
+		try {
+			filepath=path.getUrl();
+			System.out.println("filepath="+filepath);
+			successSend("/user/"+user.getIp()+"/updateBoot/alone/getResponse", chipId, user);
 
+		} catch (Exception e) {
+			errorSend(e, user);
+		}
+	}
+	
+    private Map<String, String> filemap;
+    private List<String> filenum=new ArrayList<String>();
+    private int filesize;
 	@MessageMapping("/firupload/{imgName}/{allnum}/{loadnum}")
-	@SendTo("/user/firupload/alone/getResponse")
 	public void firupload(@DestinationVariable("imgName") String imgName, @DestinationVariable("allnum") String allnum,
-			@DestinationVariable("loadnum") String loadnum, @RequestBody String filestr, User user) {
-		System.out.println(sendnum + ":固件上传--------");
-		sendnum++;
+			@DestinationVariable("loadnum") String loadnum, @RequestBody String filestr, User user) throws SerialException, SQLException {
+		//System.out.println(loadnum + ":固件上传--------"+allnum);
 		String chipId = "";
 		File files = null;
+		//String imgName1=imgName.replace(".bin", ".text");
 		String saveFile = System.getProperty("user.dir") + "\\qcit\\" + imgName;// 储存的地址
 		files = new File(saveFile);
-		BufferedWriter bw = null;
-		FileWriter fw = null;
 		try {
-			if (loadnum.equals("1")) {
-				if (!files.exists()) {
-					System.out.println("文件不存在!");
+			if(!filenum.contains(loadnum)){
+				if (loadnum.equals("1")) {
+					filenum.clear();
+					filemap=new HashMap<>();
+					filesize=0;
+					filenum.add(loadnum);
+					//sendnum=Integer.valueOf(loadnum);
+					if (!files.exists()) {
+						System.out.println("文件不存在!");
+					} else {
+						files.delete();
+					}
 					files.createNewFile();
-				} else {
-					files.delete();
-					files.createNewFile();
+					filesize+=filestr.length();
+					System.out.println("第一次传输的文件内容："+filestr);
+					
+					filemap.put(loadnum, filestr);
+//					fw = new FileWriter(files, true);
+//					bw = new BufferedWriter(fw);
+//					bw.write(filestr);
+//					bw.flush();// 注意必须刷新缓冲区 否则无法正确写入文件
+					chipId = loadnum + "_上传进行中";
+					//successSend("/user/"+user.getIp()+"/firupload/alone/getResponse", chipId, user);
+					if((filenum.size()+"").equals(allnum)){
+						writeBin(files,saveFile, user);
+					}
+				} else if (allnum.equals(loadnum)&&!loadnum.equals("1")) {
+					//sendnum=Integer.valueOf(loadnum);
+					filenum.add(loadnum);
+					filemap.put(loadnum, filestr);
+					filesize+=filestr.length();
+					//System.out.println("文件内容大小"+filestr.length());
+					//System.out.println("写文件结束"+filenum.size());
+					if((filenum.size()+"").equals(allnum)){
+						writeBin(files,saveFile, user);
+					}
+//					fw = new FileWriter(files, true);
+//					bw = new BufferedWriter(fw);
+//					fos=new FileOutputStream(saveFile);//传入文件所在路径
+//					byte output[]=olStr.getBytes();
+//					fos.write(output);
+//			        osw=new OutputStreamWriter(fos,"UTF-8"); //将fos作为参数传入osw，并且设置字符编码
+//			        bw = new BufferedWriter(osw);
+//					bw.write(toBinary(olStr));
+//					bw.flush();// 注意必须刷新缓冲区 否则无法正确写入文件
+					
+					
+					chipId = loadnum + "_上传结束";
+					successSend("/user/"+user.getIp()+"/firupload/alone/getResponse", chipId, user);
 				}
-			} else if (allnum.equals(loadnum)) {
-				System.out.println("写文件结束");
-				sendnum = 0;
-				chipId = loadnum + "_上传结束";
-				successSend("/user/firupload/alone/getResponse", chipId, user);
+//				else if((sendnum+"").equals(loadnum)){
+//				}
+				else{
+					filenum.add(loadnum);
+					filesize+=filestr.length();
+					//System.out.println("文件内容大小"+filestr.length());
+					//sendnum=Integer.valueOf(loadnum);
+					filemap.put(loadnum, filestr);
+					chipId = loadnum + "_上传进行中";
+					//successSend("/user/"+user.getIp()+"/firupload/alone/getResponse", chipId, user);
+					if((filenum.size()+"").equals(allnum)){
+						writeBin(files,saveFile, user);
+					}
+				}
+				
+				// chipId=loadnum+"_上传结束";
 			}
-			fw = new FileWriter(files, true);
-			bw = new BufferedWriter(fw);
-			bw.write(filestr);
-			bw.flush();// 注意必须刷新缓冲区 否则无法正确写入文件
-			// chipId=loadnum+"_上传结束";
 		} catch (IOException e) {
 			errorSend(e, user);
 		} finally {
-			if (bw != null) {
-				try {
-					bw.close();
-					fw.close();
-				} catch (IOException e1) {
-					errorSend(e1, user);
-				}
-			}
+//			if (bw != null) {
+//				try {
+//					//fos.close();
+//					bw.close();
+//					fw.close();
+//				} catch (IOException e1) {
+//					errorSend(e1, user);
+//				}
+//			}
 		}
 	}
-     
+	public void writeBin(File files,String saveFile,User user) throws SerialException, SQLException{
+		String olStr="";
+		for(int i=1;i<=filenum.size();i++){
+			for(Map.Entry<String, String> d:filemap.entrySet())
+			 {
+				if(d.getKey().equals(i+"")){
+//					fw = new FileWriter(files, true);
+//					bw = new BufferedWriter(fw);
+					String strc=d.getValue();
+					olStr+=strc;
+					
+					//String new_str = new String(str.getBytes("gbk"), "ANSI");
+					//String final_str = new String(new_str.getBytes("gbk"), "utf-8");
+//					bw.write(str);
+//					bw.flush();// 注意必须刷新缓冲区 否则无法正确写入文件
+				//	System.out.println("keynum="+d.getKey());
+				}
+			 }
+		}
+		//System.out.println("olStr="+olStr);
+		System.out.println("大小="+olStr.length());
+		BufferedWriter bw = null;
+		FileWriter fw = null;
+		FileOutputStream fos=null;   //节点类
+		OutputStreamWriter osw=null;  //字符类
+		try {
+//			fos=new FileOutputStream(saveFile);//传入文件所在路径
+//	        osw=new OutputStreamWriter(fos,"utf-8"); //将fos作为参数传入osw，并且设置字符编码
+////		fw = new FileWriter(files, true);
+////		fw.write(olStr);
+//
+//		bw=new BufferedWriter(osw);
+//		bw.write(olStr);
+//		bw.flush();
+//		bw.close();
+////			fw.close();
+//		fos.close();
+//		osw.close();
+//		
+//			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(System.getProperty("user.dir") + "\\qcit\\" + "qcit-221-release-V1741.bin"));
+//			byte[] strbyte=olStr.getBytes();
+//			out.write(strbyte);
+			
+			Blob b = new SerialBlob(olStr.getBytes());
+			InputStream in=b.getBinaryStream();
+	      OutputStream out = new FileOutputStream("C:\\Users\\Administrator\\Desktop\\qcit-221-release-V1781.bin");
+	      //读取数据
+	      //一次性取多少字节
+	      byte[] bytes = new byte[1024];
+	      //接受读取的内容(n就代表的相关数据，只不过是数字的形式)
+	      int n = -1;
+	      //循环取出数据
+	      while ((n = in.read(bytes,0,bytes.length)) != -1) {
+	          //转换成字符串
+	          String str = new String(bytes,0,n,"gb2312"); //这里可以实现字节到字符串的转换，比较实用
+	          System.out.println(str);
+	          //写入相关文件
+	          out.write(bytes, 0, n);
+	      }
+	      //关闭流
+	      in.close();
+	      out.close();
+
+			//			//OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(saveFile));//无内容写入
+//			OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(saveFile),"GBK");//有差异
+//			//OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(saveFile),"utf-8");//无内容写入
+//			//OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(saveFile),"Unicode");//差异较大
+//			//OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(saveFile),"ANSI");//无内容写入
+//		    //读取数据
+//		    //一次性取多少字节
+//		  String[] nostr= olStr.split("\n\r\n");
+//		  for(int i=0;i<nostr.length;i++) {
+//			byte[] bytes = new byte[nostr[i].length()];
+//			//if(i<(nostr.length-1)) {
+//			//	out.write(nostr[i]+"\n\r\n");
+//			//}else {
+//				out.write(nostr[i]);
+//			//}
+			
+//		//String newLine = System.getProperty("line.separator");
+//		//    out.write(newLine.getBytes());
+//		   }
+//	    out.close();
+		//String cbString=StrToBinstr(olStr);
+		
+		//bw.write(olStr, 0, olStr.length());
+		//bw.flush();// 注意必须刷新缓冲区 否则无法正确写入文件
+	} catch (IOException e) {
+		errorSend(e, user);
+	} finally {
+//		if (bw != null) {
+//			try {
+//				//fos.close();
+//				bw.close();
+//				//fw.close();
+//			} catch (IOException e1) {
+//				errorSend(e1, user);
+//			}
+//		}
+	}
+	}
+//		@MessageMapping("/firuploadd/{imgName}/{allnum}/{loadnum}")
+//		public void firuploadd(@DestinationVariable("imgName") String imgName, @DestinationVariable("allnum") String allnum,
+//				@DestinationVariable("loadnum") String loadnum, @RequestBody InputStream filestr, User user) {
+//			//System.out.println(loadnum + ":固件上传--------"+allnum);
+//			String chipId = "";
+//			File files = null;
+//			//String imgName1=imgName.replace(".bin", ".text");
+//			String saveFile = System.getProperty("user.dir") + "\\qcit\\" + imgName;// 储存的地址
+//			files = new File(saveFile);
+//			DataInputStream dis=new DataInputStream(filestr);
+//			try {
+//				if(!filenum.contains(loadnum)){
+//					if (loadnum.equals("1")) {
+//						filenum.clear();
+//						filemap=new HashMap<>();
+//						filesize=0;
+//						filenum.add(loadnum);
+//						//sendnum=Integer.valueOf(loadnum);
+//						if (!files.exists()) {
+//							System.out.println("文件不存在!");
+//						} else {
+//							files.delete();
+//						}
+//						files.createNewFile();
+//						System.out.println("打印字符="+dis.readUTF());
+//						System.out.println("打印长度="+dis.readLong());
+//						BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(System.getProperty("user.dir") + "\\qcit\\" + "qcit-221-release-V1742.bin"));
+//						byte[] strbyte=new byte[5120];
+//						int lenth=0;
+//						while((lenth=dis.read(strbyte, 0, strbyte.length))!=-1) {
+//							out.write(strbyte,0,lenth);
+//						}
+//						
+//					} 
+//					
+//					// chipId=loadnum+"_上传结束";
+//				}
+//			} catch (IOException e) {
+//				errorSend(e, user);
+//			} finally {
+//			}
+//		}
+	@MessageMapping("/firuploads/{imgName}")
+	public void firuploads(@DestinationVariable("imgName") String imgName,@RequestBody String filestr , User user) throws IOException, SQLException {
+//		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(System.getProperty("user.dir") + "\\qcit\\" + "qcit-221-release-V1745.bin"));
+//		out.write(filestr);
+//		out.flush();
+//		out.close();
+		final Base64.Decoder decpder=Base64.getDecoder();
+		String codestr=new String(decpder.decode(filestr.replace("data:application/octet-stream;base64,", "")));
+		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(System.getProperty("user.dir") + "\\qcit\\" + "qcit-221-release-V1280.bin"));
+		byte[] strbyte=codestr.getBytes();
+		out.write(strbyte);
+		out.flush();
+		out.close();
+		
+//		Blob b = new SerialBlob(filestr.getBytes("gb2312"));
+//		InputStream in=b.getBinaryStream();
+//      OutputStream out = new FileOutputStream("C:\\Users\\Administrator\\Desktop\\qcit-221-release-V1780.bin");
+//      //读取数据
+//      //一次性取多少字节
+//      byte[] bytes = new byte[1024];
+//      //接受读取的内容(n就代表的相关数据，只不过是数字的形式)
+//      int n = -1;
+//      //循环取出数据
+//      while ((n = in.read(bytes,0,bytes.length)) != -1) {
+//          //转换成字符串
+//          String str = new String(bytes,0,n,"gb2312"); //这里可以实现字节到字符串的转换，比较实用
+//          System.out.println(str);
+//          //写入相关文件
+//          out.write(bytes, 0, n);
+//      }
+//      //关闭流
+//      in.close();
+//      out.close();
+      
+      
+//		byte[] buffer=new byte[1024];
+//		int len=0;
+//		while((len=in.read(buffer))!=-1){
+//			fs.write(buffer, 0, len);
+//			fs.flush();
+//		}
+//		fs.close();
+		
+		
+//		OutputStream out = new FileOutputStream("C:\\Users\\Administrator\\Desktop\\qcit-221-release-V1778.bin");
+//		out.write(filestr);
+//		out.flush();
+//		out.close();
+	}
+	public static String string2HexString(String strPart) {
+        StringBuffer hexString = new StringBuffer();
+        for (int i = 0; i < strPart.length(); i++) {
+            int ch = (int) strPart.charAt(i);
+            String strHex = Integer.toHexString(ch);
+            hexString.append(strHex);
+        }
+        return hexString.toString();
+    }
+	//将Unicode字符串转换成二进制字符串，以空格相隔
+    private String StrToBinstr(String str) {
+       char[] strChar=str.toCharArray();
+       String result="";
+       for(int i=0;i<strChar.length;i++){
+           result +=Integer.toBinaryString(strChar[i])+ " ";
+       }
+       return result;
+    }
+	//把字符串转成二进制码
+	public static String toBinary(String str){
+        //把字符串转成字符数组
+        char[] strChar=str.toCharArray();
+        String result="";
+        for(int i=0;i<strChar.length;i++){
+            //toBinaryString(int i)返回变量的二进制表示的字符串
+            //toHexString(int i) 八进制
+            //toOctalString(int i) 十六进制
+            result +=Integer.toBinaryString(strChar[i])+ " ";
+        }
+        return result;
+    }
+	public static String toString(String binary) {
+        String[] tempStr=binary.split(" ");
+           char[] tempChar=new char[tempStr.length];
+           for(int i=0;i<tempStr.length;i++) {
+              tempChar[i]=BinstrToChar(tempStr[i]);
+           }
+           return String.valueOf(tempChar);
+   }
+	 //将二进制字符串转换成int数组
+    public static int[] BinstrToIntArray(String binStr) {       
+        char[] temp=binStr.toCharArray();
+        int[] result=new int[temp.length];   
+        for(int i=0;i<temp.length;i++) {
+            result[i]=temp[i]-48;
+        }
+        return result;
+    }
+	public static char BinstrToChar(String binStr){
+        int[] temp=BinstrToIntArray(binStr);
+        int sum=0;
+        for(int i=0; i<temp.length;i++){
+            sum +=temp[temp.length-1-i]<<i;
+        }   
+        return (char)sum;
+   }
 	@MessageMapping("/deleteCoord/{coodPoint}")
 	public void deleteCoord(@DestinationVariable("coodPoint") String coodPoint, User user) {
 		System.out.println("删除设备定标--------");
@@ -374,14 +767,14 @@ public class baseController extends optContorller {
 		try {
 			api.deleteParameter(0, coodPoint);
 			chipId = "删除设备定标成功";
-			successSend("/user/deleteCoord/alone/getResponse", chipId, user);
+			successSend("/user/"+user.getIp()+"/deleteCoord/alone/getResponse", chipId, user);
 		} catch (Exception e) {
 			errorSend(e, user);
 		}
 	}
 	
 	@MessageMapping("/loadCoord/{opt}")
-	//@SendTo("/user/loadCoord/alone/getResponse")
+	//@SendTo("/user/"+user.getIp()+"/loadCoord/alone/getResponse")
 	public void loadCoord(@DestinationVariable("opt") String opt, User user) {
 		System.out.println("设备定标--------");
 		String chipId = "";
@@ -413,7 +806,7 @@ public class baseController extends optContorller {
 			} else if ("1".equals(opt)) {// 上传到设备
 				chipId = "上传本地参数到设备成功";
 			}
-			successSend("/user/loadCoord/alone/getResponse", chipId, user);
+			successSend("/user/"+user.getIp()+"/loadCoord/alone/getRespons", chipId, user);
 		} catch (Exception e) {
 			errorSend(e, user);
 		}
@@ -426,8 +819,9 @@ public class baseController extends optContorller {
 		try {
 			long cood = 0;
 			int motor = Integer.valueOf(motorId);
+			String serId=api.getFirVersion(0, 1);
 			if ("0".equals(opt)) {// 读取参数
-				cood = api.getProperty(0, "qcit_location", coodPoint);
+				cood = api.getProperty(0, "qcit_location_"+serId, coodPoint);
 				if (cood < -2000000000)
 					cood = 0;
 			} else if ("1".equals(opt)) {// 读取设备参数
@@ -435,18 +829,27 @@ public class baseController extends optContorller {
 				if (cood < -2000000000)
 					cood = 0;
 			} else if ("2".equals(opt)) {// 读取坐标
-				cood = api.getProperty(0, "qcit_location", coodPoint);
+				cood = api.getProperty(0, "qcit_location_"+serId, coodPoint);
 				if (cood < -2000000000)
 					cood = 0;
-				api.motorMove(0, motor, new Coordinate(cood));
+				if("QCIT.Config.InBelt".equals(coodPoint)||"QCIT.Config.BeltToTrack".equals(coodPoint)||"QCIT.Config.TrackToProg".equals(coodPoint)||"QCIT.Config.iProToBack".equals(coodPoint)) {
+					api.motorStep(0, motor, new Coordinate(cood));
+				}else {
+					api.motorMove(0, motor, new Coordinate(cood));
+				}
+				
 			} else if ("3".equals(opt)) {// 读取设备参数坐标
 				cood = api.getParameter(0, coodPoint);
 				if (cood < -2000000000)
 					cood = 0;
-				api.motorMove(0, motor, new Coordinate(cood));
+				if("QCIT.Config.InBelt".equals(coodPoint)||"QCIT.Config.BeltToTrack".equals(coodPoint)||"QCIT.Config.TrackToProg".equals(coodPoint)||"QCIT.Config.iProToBack".equals(coodPoint)) {
+					api.motorStep(0, motor, new Coordinate(cood));
+				}else {
+					api.motorMove(0, motor, new Coordinate(cood));
+				}
 			}
 			chipId = cood + "";
-			successSend("/user/readCoord/alone/getResponse", chipId, user);
+			successSend("/user/"+user.getIp()+"/readCoord/alone/getResponse", chipId, user);
 		} catch (Exception e) {
 			errorSend(e, user);
 		}
@@ -458,21 +861,24 @@ public class baseController extends optContorller {
 		System.out.println("保存定标--------");
 		String chipId = "";
 		try {
+			String serId=api.getFirVersion(0, 1);
 			int motor = Integer.valueOf(motorId);
 			if ("0".equals(opt)) {// 保存坐标参数到本地
-				api.setProperty(0, "qcit_location", coodPoint, coord);
+				api.setProperty(0, "qcit_location_"+serId, coodPoint, coord);
 			} else if ("1".equals(opt)) {// 保存设备参数
 				api.setParameter(0, coodPoint, Long.valueOf(coord));
-				api.setProperty(0, "qcit_location", coodPoint, coord);
+				api.setProperty(0, "qcit_location_"+serId, coodPoint, coord);
 			} else if ("2".equals(opt)) {// 保存坐标到本地
-				api.setProperty(0, "qcit_location", coodPoint, Axis.fromId(motor));
+				api.setProperty(0, "qcit_location_"+serId, coodPoint, Axis.fromId(motor));
 			} else if ("3".equals(opt)) {// 保存坐标到设备
 				long len = api.getCurrentCoordinate(0, motor).getCoordinate();
 				api.setParameter(0, coodPoint, len);
-				api.setProperty(0, "qcit_location", coodPoint, Axis.fromId(motor));
+				api.setProperty(0, "qcit_location_"+serId, coodPoint, Axis.fromId(motor));
 			}
+			 String file1="qcit_location"+"_"+serId;
+			 api.getMotorSpeed(file1);//获取坐标参数
 			chipId = "保存成功";
-			successSend("/user/writeCoord/alone/getResponse", chipId, user);
+			successSend("/user/"+user.getIp()+"/writeCoord/alone/getResponse", chipId, user);
 		} catch (Exception e) {
 			errorSend(e, user);
 		}
@@ -501,7 +907,7 @@ public class baseController extends optContorller {
 				api.motorReset(0, motor);
 				chipId = "Reset成功";
 			}
-			successSend("/user/motorOpt/alone/getResponse", chipId, user);
+			successSend("/user/"+user.getIp()+"/motorOpt/alone/getResponse", chipId, user);
 
 		} catch (Exception e) {
 			errorSend(e, user);
@@ -536,7 +942,7 @@ public class baseController extends optContorller {
 				map1.put(ch + "", kpString);
 			}
 			chipId = JSONObject.fromObject(map1).toString();
-			successSend("/user/searchMotor/alone/getResponse", chipId, user);
+			successSend("/user/"+user.getIp()+"/searchMotor/alone/getResponse", chipId, user);
 		} catch (Exception e) {
 			errorSend(e, user);
 		}
@@ -895,12 +1301,12 @@ public class baseController extends optContorller {
 	// }
 	// return chipId;
 	// }
-	@MessageMapping("/firuploads")
-	@SendTo("/user/firuploads/alone/getResponse")
-	public String firupload(@RequestBody String filestr, Principal principal) {
-		System.out.println(sendnum + ":固件上传--------");
-		return filestr;
-	}
+//	@MessageMapping("/firuploads")
+//	@SendTo("/user/firuploads/alone/getResponse")
+//	public String firupload(@RequestBody String filestr, Principal principal) {
+//		System.out.println(sendnum + ":固件上传--------");
+//		return filestr;
+//	}
 
 	private int sendnum = 0;
 	// @MessageMapping("/firupload/{imgName}/{allnum}/{loadnum}")
@@ -1137,6 +1543,15 @@ public class baseController extends optContorller {
 		}
 	}
 
+}
+
+
+@Data
+class Filepath {
+	/**
+	 * 
+	 */
+	private String url;
 }
 
 @Data

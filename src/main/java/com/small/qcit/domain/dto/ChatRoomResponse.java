@@ -1,5 +1,4 @@
-package com.small.qcit.domain;
-
+package com.small.qcit.domain.dto;
 
 public class ChatRoomResponse {
 	private String name;

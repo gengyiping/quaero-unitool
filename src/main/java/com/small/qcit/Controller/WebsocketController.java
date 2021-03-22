@@ -1,14 +1,25 @@
 package com.small.qcit.Controller;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.Resource;
+import javax.swing.JOptionPane;
 
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -18,6 +29,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.quest.common.util.CmdExecUtil;
 import com.quest.software.bus4j.datatype.CmdCodeException;
 import com.quest.software.bus4j.datatype.ErrCodeException;
 import com.quest.software.bus4j.module.DataFormatException;
@@ -32,18 +44,24 @@ import com.small.qcit.enums.CodeEnum;
 import com.small.qcit.enums.MessageTypeEnum;
 import com.small.qcit.enums.inter.Code;
 import com.small.qcit.exception.ErrorCodeException;
+import com.small.qcit.interceptor.WebSocketInterceptor;
 import com.small.qcit.service.MessageService;
 import com.small.qcit.utils.CheckUtils;
+
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 
 
 @RestController
+@Slf4j
 public class WebsocketController  extends optContorller{
 	public String initState=null;
 	@Autowired
     private SimpMessagingTemplate messagingTemplate;
-	 @Resource
-	    private MessageService messageService;
+//	 @Resource
+//	    private MessageService messageService;
+	
 //	 @MessageMapping(StompConstant.PUB_USER)
 //	    public void sendToUser(MessageRO messageRO, User user) throws Exception {
 //	        if (!CheckUtils.checkMessageRo(messageRO) || !CheckUtils.checkUser(user)) {
@@ -55,167 +73,322 @@ public class WebsocketController  extends optContorller{
 //	    }
 	 @MessageMapping("/init")
 	    public void init(User user){
-//	        if (!CheckUtils.checkMessageRo(messageRO) || !CheckUtils.checkUser(user)) {
-//	            throw new ErrorCodeException(CodeEnum.INVALID_PARAMETERS);
-//	        }//参数验证
-//	        if (CheckUtils.checkMessage(message)) {
-//	        }
-			 if(initState==null&&!"".equals(initState)){
+		    log.info("开始连接设备信息"); 
 			  try {
-				  api.startClientLog();
+				  api.startClientLog();//开启客户端日志
 				api.init();
 				initState="初始化成功";
-				//String message = messageRO.getMessage();
+				 log.info(initState); 
 				successSend("/topic/getResponse", initState, user);
 			} catch (Exception e) {
 				errorSend(e, user);
 			}
-			 }
 	 }
+	 @MessageMapping("/serverLog")
+	    public void serverLog(User user){
+		     log.info("开始开启服务端日志"); 
+			  try {
+				  api.startLog();//开启服务端日志
+				String mess="开启服务端日志成功";
+				 log.debug(mess); 
+				successSend("/user/"+user.getIp()+"/serverLog/getResponse", mess, user);
+			} catch (Exception e) {
+				errorSend(e, user);
+			}
+	 }
+	 @MessageMapping("/eventLog")
+	    public void eventLog(User user){
+		  log.info("开始开启启事件日志"); 
+			  try {
+				  api.starteventLog();//开启事件日志
+				  String mess="开启启事件日志成功";
+				  log.info(mess); 
+				successSend("/user/"+user.getIp()+"/eventLog/getResponse", mess, user);
+			} catch (Exception e) {
+				errorSend(e, user);
+			}
+	 }
+	 private static String  propath=System.getProperty("user.dir")+"\\qcit\\conf\\";
+	 @MessageMapping("/oneToconf")
+	    public void oneToconf(User user){
+		 log.info("开始一键改配置"); 
+			  try {
+				//获取qcit/conf下所有文件
+					List lsfire=getFiles(propath);
+					String files=StringUtils.join(lsfire , ",");
+	                   //下载Xml文件
+						String ipPort = api.getPropertys(0, "Ip_qcit_location", "QCIT.MB.ipPort");
+							String serid=api.getFirVersion(0, 1);//获取芯片ID
+							String file="qcit_location";
+							String mess=copyCoord(0,file,serid,ipPort);
+							if(mess=="") {
+								mess="一键改配置成功";
+							}
+							 log.info(mess); 
+				successSend("/user/"+user.getIp()+"/oneToconf/getResponse", mess, user);
+			} catch (Exception e) {
+				errorSend(e, user);
+			}
+	 }
+	  public static List<String> getFiles(String path) {
+	        List<String> files = new ArrayList<String>();
+	        File file = new File(path);
+	        File[] tempList = file.listFiles();
+
+	        for (int i = 0; i < tempList.length; i++) {
+	            if (tempList[i].isFile()) {
+	                files.add(tempList[i].toString());
+	                //文件名，不包含路径
+	                //String fileName = tempList[i].getName();
+	            }
+	            if (tempList[i].isDirectory()) {
+	                //这里就不递归了，
+	            }
+	        }
+	        return files;
+	    }
+		/**
+		 * 
+		 * @param boardIdx 
+		 * @param file 
+		 * @param serid 电路板ID
+		 * @param ipPort
+		 * @throws ErrCodeException
+		 * @throws ExecuteException
+		 */
+		public String copyCoord(int boardIdx,String file,String serid,String ipPort) throws ErrCodeException, ExecuteException{
+			String cms=""; 
+			String ip=ipPort.split(":")[0];
+			   String file1=file+"_"+serid;
+			   File kFile=new File(propath+file1+".xml");
+			   if(!kFile.exists()){//若不包含221_+serid.xml的文件,创建文件
+				   api.setSwFunc(boardIdx, 0x5000, 1, 0, 0);//开启tftp服务
+				   String command1=System.getProperty("user.dir")+"\\tftp.exe -i -v "+ip+" GET /config/"+file+".xml "+propath+file1+".xml";
+					boolean cmdflag1=CmdExecUtil.processExec(command1);
+					if(kFile.length()>0){
+						
+					}else{
+						 //kFile.mkdir();
+						   copy01(propath+file+".xml",propath+file1+".xml");//复制文件内容到创建的文件中	
+//						   List<ElementNode> jddb=Dom4jUtils.readXml(kFile);//文件节点定标信息
+//						   for (int j = 0; j < jddb.size(); j++) {
+//							   ElementNode jd= jddb.get(i);
+//							   String key=jd.getRootElement()+"."+jd.getAttrnode()+"."+jd.getNode();
+//							   
+//						   }
+					 cms="您还没有上传定标文件到电路板，请尽快将定标文件上传到设备中:\\n 若模块定标中设备参数能读取到参数，请先一键下载设备参数到本地;\\n若模块定标中设备参数不能读取到参数，请先定标，再一键上传至设备电路板中;";
+
+					}
+					api.setSwFunc(boardIdx, 0x5000, 0, 0, 0);//关闭tftp服务
+			   }else if(kFile.exists()&&kFile.length()==0){//若包含221_+serid.xml的文件,且大小为零，删除该文件
+				   kFile.delete();
+				   api.setSwFunc(boardIdx, 0x5000, 1, 0, 0);//开启tftp服务
+				   String command1=System.getProperty("user.dir")+"\\tftp.exe -i -v "+ip+" GET /config/"+file+".xml "+propath+file1+".xml";
+					boolean cmdflag1=CmdExecUtil.processExec(command1);
+					if(kFile.length()>0){
+						
+					}else{
+						   copy01(propath+file+".xml",propath+file1+".xml");//复制文件内容到创建的文件中	
+					 cms="您还没有上传定标文件到电路板，请尽快将定标文件上传到设备中:\\n 若模块定标中设备参数能读取到参数，请先一键下载设备参数到本地;\\n若模块定标中设备参数不能读取到参数，请先定标，再一键上传至设备电路板中;";
+
+					}
+					api.setSwFunc(boardIdx, 0x5000, 0, 0, 0);//关闭tftp服务
+			   }else if(kFile.exists()&&kFile.length()!=0){//若包含221_+serid.xml的文件,且大小为零，删除该文件
+					 cms="您已使用过一键改配置";
+			   }
+			return cms;
+		}
+		public static void copy01(String sourceFile,String targetFile) 
+		{
+
+			BufferedReader br = null;
+			FileWriter fw;
+			BufferedWriter bw=null;
+			 Writer writer=null;
+			try {
+				br = new BufferedReader(new InputStreamReader(new FileInputStream(sourceFile), "UTF-8"));
+				 writer = new BufferedWriter(
+						                         new OutputStreamWriter(
+						                                 new FileOutputStream(targetFile), "UTF-8"));
+						 
+					String line = null;
+					boolean flag=false;
+					while( ( line = br.readLine() ) != null ){
+						if(!flag)
+						{
+						flag=true;
+						writer.write(line);
+						}
+						else
+						{
+						  writer.write("\r\n");
+						  writer.write(line);
+						}
+					}
+					
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}finally{
+				try {
+					br.close();
+					writer.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+
+		}
+	 /**
+	  * 查询是否连接
+	  * @param user
+	  */
+	 @MessageMapping("/ifInit")
+	    public void ifInit(User user){
+		 log.info("开始查询是否初始化"); 
+		 if("初始化成功".equals(initState)){
+			 log.info("初始化状态："+initState); 
+			 successSend("/user/"+user.getIp()+"/ifInit/alone/getResponse", "false", user);
+		 }
+	 }
+	 
 	 @MessageMapping("/initInfo")
-	// @SendTo("/user/initInfo/alone/getResponse")
+	// @SendTo("/user/"+user.getIp()+"/initInfo/alone/getResponse")
 	 public void initInfo(User user) {
-		 System.out.println("初始化信息--------");
+		 log.info("开始获取连接信息"); 
 		 String initInfo="";
 		 try {
-			String ipPort = api.getPropertys(0, "small_qcit_location", "QCIT.MB.ipPort");
+			String ipPort = api.getPropertys(0, "Ip_qcit_location", "QCIT.MB.ipPort");
 			String fir=api.getFirVersion(0, 0);
 			String dll=api.getDllVersion();
 			String chip=api.getFirVersion(0, 1);
 			initInfo=ipPort+"-"+fir+"-"+dll+"-"+chip;
-			successSend("/user/initInfo/alone/getResponse", initInfo, user);
+			 log.info("取连接信息内容："+initInfo); 
+			successSend("/user/"+user.getIp()+"/initInfo/alone/getResponse", initInfo, user);
 		} catch ( Exception e) {
 			errorSend(e, user);
 		}
 	        //return initInfo;
 	    }
 	 
-//	 @MessageMapping("/init")
-//	 @SendTo("/topic/getResponse")
-//	 public String init() {
-//		 System.out.println("初始化--------");
-//		 try {
-//			 if(initState==null&&!"".equals(initState)){
-//			  api.startClientLog();
-//			  api.init();
-//			  initState="成功";
-//			 }
-//
-//		} catch (ErrCodeException | CmdCodeException | IOException | DocumentException | ExecuteException
-//				| DataFormatException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//			return  e.getMessage();
-//		}
-//	        return "初始化成功";
-//	    }
-//	 @MessageMapping("/initInfo")
-//	 @SendTo("/user/initInfo/alone/getResponse")
-//	 public String initInfo() {
-//		 System.out.println("初始化信息--------");
-//		 String initInfo="";
-//		 try {
-//			String ipPort = api.getPropertys(0, "small_qcit_location", "QCIT.MB.ipPort");
-//			String fir=api.getFirVersion(0, 0);
-//			String dll=api.getDllVersion();
-//			String chip=api.getFirVersion(0, 1);
-//			initInfo=ipPort+"-"+fir+"-"+dll+"-"+chip;
-//		} catch (ErrCodeException | IOException | DocumentException | ExecuteException
-//				| DataFormatException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//			return  e.getMessage();
-//		}
-//	        return initInfo;
-//	    }
-	
-	 /**
-	  * 获取上一次所在页面状态
-	  */
-	 private List<LoginState> loginmess=new ArrayList<LoginState>();
-	 @MessageMapping("/initstate/{ip}")
-	 @SendTo("/user/initstate/alone/getResponse")
-	 public String initstate(@DestinationVariable("ip") String ip) {
-		 System.out.println("状态--------");
-		 String[] info=new String[4];
-		 if(loginmess.size()==0){
-			 LoginState logmes=new LoginState();
-			 logmes.setIp(ip);
-			
-			 info[0]="0";info[1]="0";info[2]="#";info[3]="#";
-			 logmes.setRootPage("0");
-			 logmes.setFirstPage("0");
-			 logmes.setSecondPage("#");
-			 logmes.setThirdPage("#");
-			 loginmess.add(logmes);
-		 }else{
-			 for(int i=0;i<loginmess.size();i++){
-				 if(loginmess.get(i).getIp().equals(ip)){
-					 LoginState infos=loginmess.get(i);
-					 return infos.getRootPage()+"_"+infos.getFirstPage()+"_"+infos.getSecondPage()+"_"+infos.getThirdPage();
-//					 if(!"#".equals(infos.getRootPage()))return info[0]+"_#_#_#";
-//					 if(!"#".equals(infos.getFirstPage()))return info[0]+"_"+info[1]+"_#_#";
-//					 if(!"#".equals(infos.getSecondPage()))return info[0]+"_"+info[1]+"_"+info[2]+"_#";
-//					 if(!"#".equals(infos.getThirdPage()))return info[0]+"_"+info[1]+"_"+info[2]+"_"+info[3];
-				 }
-			 } 
-		 }
-		return "";
-	 }
 	 /**
 	  * 保存所在页面
 	  * @param ip
 	  * @param page
 	  * @return
 	  */
-	 @MessageMapping("/page/{ip}/{page}")
-	 @SendTo("/user/page/alone/getResponse")
-	 public String pageload(@DestinationVariable("ip") String ip,@DestinationVariable("page") String page) {
-		 System.out.println("状态--------");
-		    boolean tmstate=false;
-		    String[] info=page.split("_");
+	 @MessageMapping("/page/{page}")
+	// @SendTo("/user/"+user.getIp()+"/page/alone/getResponse")
+	 public void pageload(@DestinationVariable("page") String page,User user) {
+		 log.info("开始保存所在页面："+page); 
+		 String[] info=page.split("-");
+		 if(loginmess.size()==0){
+			 User usernew=new User();
+			 usernew.setUserId(user.getUserId());
+			 usernew.setUsername(user.getUsername());
+			 usernew.setProjectname(user.getProjectname());
+			 usernew.setRootPage("0");
+			 usernew.setFirstPage("#");
+			 usernew.setSecondPage("#");
+			 usernew.setThirdPage("#");
+			 usernew.setIp(user.getIp());
+			 loginmess.add(usernew);
+		 }else {//存在用户名相同，ip不同的也添加
+			 boolean ipflag=false;
 			 for(int i=0;i<loginmess.size();i++){
-				 if(loginmess.get(i).getIp().equals(ip)){
-					 tmstate=true;
-					 if(!loginmess.get(i).getRootPage().equals(info[0])){
-						 loginmess.get(i).setRootPage(info[0]);
-						 loginmess.get(i).setFirstPage("#");
+				 if(user.getUsername().equals(loginmess.get(i).getUsername())&&user.getIp().equals(loginmess.get(i).getIp())){//用户名相同时保存界面
+					 ipflag=true;
+				 }
+			 }
+			 if(ipflag==false) {
+				 User usernew=new User();
+				 usernew.setUserId(user.getUserId());
+				 usernew.setUsername(user.getUsername());
+				 usernew.setProjectname(user.getProjectname());
+				 usernew.setRootPage("0");
+				 usernew.setFirstPage("#");
+				 usernew.setSecondPage("#");
+				 usernew.setThirdPage("#");
+				 usernew.setIp(user.getIp());
+				 loginmess.add(usernew);
+			 }
+		 }
+		 for(int i=0;i<loginmess.size();i++){
+			 if(user.getUsername().equals(loginmess.get(i).getUsername())&&user.getIp().equals(loginmess.get(i).getIp())){//用户名相同时保存界面
+				 if(!loginmess.get(i).getRootPage().equals(info[0])&&!"#".equals(info[0])){
+					 loginmess.get(i).setRootPage(info[0]);
+					 loginmess.get(i).setFirstPage("#");
+					 loginmess.get(i).setSecondPage("#");
+					 loginmess.get(i).setThirdPage("#");
+				 }else if(!loginmess.get(i).getFirstPage().equals(info[1])&&!"#".equals(info[1])){
+						 loginmess.get(i).setFirstPage(info[1]);
 						 loginmess.get(i).setSecondPage("#");
 						 loginmess.get(i).setThirdPage("#");
-					 }else{
-						 if(!loginmess.get(i).getFirstPage().equals(info[1])){
-							 loginmess.get(i).setFirstPage(info[1]);
-							 loginmess.get(i).setSecondPage("#");
+					 }else if(!loginmess.get(i).getSecondPage().equals(info[2])&&!"#".equals(info[2])){
+							 loginmess.get(i).setSecondPage(info[2]);
 							 loginmess.get(i).setThirdPage("#");
-						 }else{
-							 if(!loginmess.get(i).getSecondPage().equals(info[2])){
-								 loginmess.get(i).setSecondPage(info[2]);
-								 loginmess.get(i).setThirdPage("#");
-							 }else{
-								 if(!loginmess.get(i).getThirdPage().equals(info[3])){
-									 loginmess.get(i).setThirdPage(info[3]);
-								 }
-							 } 
-						 }
-					 }
-				 }
-			 } 
-			 if(tmstate==false){
-				 LoginState lstate=new LoginState();
-				 lstate.setIp(ip);
-				 lstate.setRootPage(info[0]);
-				 lstate.setFirstPage(info[1]);
-				 lstate.setSecondPage(info[2]);
-				 lstate.setThirdPage(info[3]);
-				 loginmess.add(lstate);
+						 }else if(!loginmess.get(i).getThirdPage().equals(info[3])&&!"#".equals(info[3])){
+								 loginmess.get(i).setThirdPage(info[3]);
+							 }
 			 }
-	        return "";
-	    }
+		 }
+	 }
+	 /**
+	  * 获取上一次所在页面状态
+	  */
+	 @MessageMapping("/initstate")
+	// @SendTo("/user/"+user.getIp()+"/initstate/alone/getResponse")
+	 public void initstate(User user) {
+		 System.out.println("状态--------");
+		 String[] info=new String[4];
+		 if(loginmess.size()==0){
+			 User logmes=new User();
+			 logmes.setUserId(user.getUserId());
+			 logmes.setUsername(user.getUsername());
+			 logmes.setProjectname(user.getProjectname());
+			 logmes.setRootPage("0");
+			 logmes.setFirstPage("#");
+			 logmes.setSecondPage("#");
+			 logmes.setThirdPage("#");
+			 logmes.setIp(user.getIp());
+			 loginmess.add(logmes);
+		 }else{//存在用户名相同，ip不同的也添加
+			 boolean ipflag=false;
+			 for(int i=0;i<loginmess.size();i++){
+				 if(user.getUsername().equals(loginmess.get(i).getUsername())&&user.getIp().equals(loginmess.get(i).getIp())){//用户名相同时保存界面
+					 ipflag=true;
+				 }
+			 }
+			 if(ipflag==false) {
+				 User usernew=new User();
+				 usernew.setUserId(user.getUserId());
+				 usernew.setUsername(user.getUsername());
+				 usernew.setProjectname(user.getProjectname());
+				 usernew.setRootPage("0");
+				 usernew.setFirstPage("#");
+				 usernew.setSecondPage("#");
+				 usernew.setThirdPage("#");
+				 usernew.setIp(user.getIp());
+				 loginmess.add(usernew);
+			 }
+			  
+		 }
+		 for(int i=0;i<loginmess.size();i++){
+			 if(loginmess.get(i).getUsername().equals(user.getUsername())&&user.getIp().equals(loginmess.get(i).getIp())){
+				 User infos=loginmess.get(i);
+				 String initInfo= infos.getRootPage()+"-"+infos.getFirstPage()+"-"+infos.getSecondPage()+"-"+infos.getThirdPage();
+					successSend("/user/"+user.getIp()+"/initstate/alone/getResponse", initInfo, user);
+			 }
+		 }
+	 }
+
 	 
 	 @MessageMapping("/reset")
 	 @SendTo("/topic/getResponse")
-	 //@SendTo("/user/1111/alone/getResponse")
-	// @SendToUser("/user/1111/alone/getResponse")
+	 //@SendTo("/user/"+user.getIp()+"/1111/alone/getResponse")
+	// @SendToUser("/user/"+user.getIp()+"/1111/alone/getResponse")
 	 public String reset() {
 		 System.out.println("复位--------");
 		 try {
@@ -320,4 +493,9 @@ public class WebsocketController  extends optContorller{
 //        headerAccessor.setLeaveMutable(true);
 //        return headerAccessor.getMessageHeaders();
 //    }
+}
+@Data
+class MapPage{
+	private String pageKey;
+	private String pageValue;
 }

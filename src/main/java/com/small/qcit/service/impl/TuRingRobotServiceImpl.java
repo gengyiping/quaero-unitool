@@ -21,7 +21,7 @@ import javax.annotation.Resource;
  */
 @Service
 @Slf4j
-public class TuRingRobotServiceImpl implements RobotService {
+public class TuRingRobotServiceImpl  implements RobotService {
 
     @Resource
     private RestTemplate restTemplate;
