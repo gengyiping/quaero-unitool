@@ -1,6 +1,5 @@
 package com.small.qcit.domain;
 
-
 public class ChatRoomResponse {
 	private String name;
 	private String chatValue;

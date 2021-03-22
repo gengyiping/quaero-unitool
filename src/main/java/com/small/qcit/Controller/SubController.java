@@ -6,6 +6,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import com.small.qcit.config.ReceiveMessage;
+import com.small.qcit.domain.ChatRoomResponse;
 
 @Controller
 public class SubController {
