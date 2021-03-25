@@ -28,7 +28,7 @@ export default {
     this.stompClient= this.$store.state.stompClient;
     this.loadselect();//加载电机
     this.motorId=this.$store.state.motorId;
-    if(this.kuList!=null){
+    if(this.kuList!=""){
        this.motorName=this.kuList[this.motorId]
     }
     var _this = this;// `这一步很重要`

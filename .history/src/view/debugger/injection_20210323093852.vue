@@ -79,7 +79,7 @@
               <tr>
                <td><el-input v-model="bootIp" placeholder="Bootload Ip" style="width: 125px;"></el-input></td>
                <!-- <td><el-button type="primary" style="width: 125px;" @click="openfirupdate()" plain>开启固件更新</el-button></td> -->
-              <td><el-button type="primary" style="width: 125px;" @click="firclicks" plain>固件更新</el-button></td>
+              <td><el-button type="primary" style="width: 125px;" @click="firclicks" plain>开启固件更新</el-button></td>
 
              </tr>
             
@@ -93,7 +93,7 @@
                 </td>
              </tr>
              <tr>
-               <td > <el-button type="primary" style="width: 125px;" @click="openfirupdate()" plain>开启固件更新</el-button></td>
+               <td > <el-button type="primary" style="width: 125px;" @click="initialUpdate()" plain>首次更新</el-button></td>
                <td >
                  <el-button type="primary" style="width: 125px;" @click="initialUpdate()" plain>首次更新</el-button>
                 </td>
@@ -365,15 +365,17 @@ export default {
                _this.scanval=_this.openval
              })
       Bus.$on('firupload',function(val){//监听fi
+                 
                    if(val.indexOf("上传进行中") != -1){
                      var sknum=val.split("_")[0]
                       console.log("次数+++:"+sknum)
                         _this.sendLoad(imgName,n,sknum,knum,str)
                    }
                  })   
-       Bus.$on('allsensor',function(val){//监听first组件的txt事件
+                Bus.$on('allsensor',function(val){//监听first组件的txt事件
            let obj=JSON.parse(val)
             for(let key in obj) {
+               
                 if(key==1)_this.sensorsearchForm.sensor1=obj[key]
                 if(key==2)_this.sensorsearchForm.sensor2=obj[key]
                 if(key==3)_this.sensorsearchForm.sensor3=obj[key]

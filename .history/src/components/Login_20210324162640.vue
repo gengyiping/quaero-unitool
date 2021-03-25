@@ -150,6 +150,7 @@ getUserIP (onNewIP) { // 获取ip地址
      console.log("获取本地的ip.text文件"+xfil)
    },
     login(){
+       //this.$cookieStore.setCookie('user', "")
        this.loginSubmit(0)
     },
     loaduser(){
@@ -497,6 +498,7 @@ getUserIP (onNewIP) { // 获取ip地址
 
         // 错误信息订阅
            _this.stompClient.subscribe('/user/'+_this.iplocal+'/'+_this.uid+'/error', function (data) {
+             
             _this.getData(data.body);
 
           });

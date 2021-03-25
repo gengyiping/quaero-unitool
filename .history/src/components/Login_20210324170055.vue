@@ -322,6 +322,7 @@ getUserIP (onNewIP) { // 获取ip地址
         });
        
          _this.stompClient.subscribe('/user/'+_this.iplocal+'/sensorSearch/alone/getResponse', function (val) {//查询所有传感器
+         debugger
             _this.getData(val.body)
             Bus.$emit('allsensor',_this.returnobj.message)
         });
@@ -497,6 +498,7 @@ getUserIP (onNewIP) { // 获取ip地址
 
         // 错误信息订阅
            _this.stompClient.subscribe('/user/'+_this.iplocal+'/'+_this.uid+'/error', function (data) {
+             
             _this.getData(data.body);
 
           });

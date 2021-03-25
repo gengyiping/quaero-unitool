@@ -81,7 +81,7 @@
   </el-tab-pane>
   <el-tab-pane label="系统消息">
      <span slot="label"  @click="systemClick()"><i class="el-icon-tickets"></i> 系统消息</span>
-           <el-input type="textarea"  id="system_id" style="width:100%; height:100%; " v-model="systemdesc" :rows="30" ></el-input>
+           <el-input type="textarea"  id="system_id" style="width:100%; height:100%; " v-model="systemdesc" :rows="24" ></el-input>
     </el-tab-pane>
 </el-tabs>
              

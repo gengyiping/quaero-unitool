@@ -43,7 +43,7 @@ import Stomp from 'webstomp-client'
 import Bus from './bus'
 //import {getNetworkIp} from './ip'
  import WebTest from './webTest'
- import md5 from 'js-md5'
+
 
 export default {
   data() {
@@ -104,11 +104,25 @@ export default {
     //     that.loginSubmit();
     // })
      this.getUserIP(function (ip) { // 调用ip接口
-     debugger
+     
             that.iplocal = String(ip)
             that.getIpPort('./../static/Text/Ip.text') //获取ip内容
             that.loaduser() //加载cookie中的用户信息
        })
+var _this = this
+        Bus.$on('connectstate',function(val){//连接成功直接跳转主页面
+              if(val==true){
+                 _this.loginshow=false
+                 _this.mainshow=true
+                 _this.cacheUser() //user放入cookie
+                 if(indexid==0){//点击登录时，保存用户在哪个界面
+                 
+                     _this.stompClient.send('/app/page/0-#-#-#',{})
+                 }else{//获取上一次登录的界面
+                     _this.stompClient.send('/app/initstate')
+                 }
+              }
+         })
   },
   methods: {
 getUserIP (onNewIP) { // 获取ip地址
@@ -182,26 +196,13 @@ getUserIP (onNewIP) { // 获取ip地址
     loginSubmit(indexid){
        
        var _this=this
-       debugger
+       
       if(this.$store.state.stompClient==null){//没有连接创建连接
-         const socket = new SockJS('http://'+this.socketUrl+'/webSocket')
-         this.stompClient = Stomp.over(socket)
+         const socket = new SockJS('http://'+this.socketUrl+'/webSocket') //初始化weosocket
+         this.stompClient = Stomp.over(socket) //获取STOMP子协议的客户端对象
          this.$store.state.stompClient=this.stompClient
          this.config()// 配置stomp
          this.sub()//订阅地址
-         Bus.$on('connectstate',function(val){//连接成功直接跳转主页面
-              if(val==true){
-                 _this.loginshow=false
-                 _this.mainshow=true
-                 _this.cacheUser() //user放入cookie
-                 if(indexid==0){//点击登录时，保存用户在哪个界面
-                 
-                     _this.stompClient.send('/app/page/0-#-#-#',{})
-                 }else{//获取上一次登录的界面
-                     _this.stompClient.send('/app/initstate')
-                 }
-              }
-         })
       }else{ //当连接不为空时比较用户，不同时先关闭连接创建连接，相同时忽略直接跳过直接登录界面
          var data =this.$cookieStore.getCookie('user')
          if(data==null||data==''){
@@ -265,13 +266,15 @@ getUserIP (onNewIP) { // 获取ip地址
         this.createUser();
            var userinfo= {
             userName:this.loginform.userName,
-            passWord:this.loginform.password,
+            //passWord:this.loginform.password,
+            passWord:this.$md5(this.loginform.password),
             projectName:this.loginform.projectName,
             ip:this.iplocal,
             initflag:1
           }
-        this.stompClient.connect(userinfo, function (frame) {
           
+          
+        this.stompClient.connect(userinfo, function (frame) {
             _this.uid = frame.headers['user-name']
             _this.$store.state.uid=_this.uid
             console.log('-------连接成功------------'+_this.uid)
@@ -282,7 +285,7 @@ getUserIP (onNewIP) { // 获取ip地址
             _this.handleMessage(obj);
             if(_this.returnobj.message.indexOf("登入界面登入") != -1){
                console.log('-------用户连接成功------------')
-               _this.$message('连接后台成功')
+              // _this.$message('连接后台成功')
                  _this.setConnected(true)
             }
           });
@@ -305,7 +308,7 @@ getUserIP (onNewIP) { // 获取ip地址
         });
          _this.stompClient.subscribe('/user/'+_this.iplocal+'/initstate/alone/getResponse', (val) => { //获取上一次页面状态
           console.log(val.body)
-          debugger
+          
               var pagesindexs=val.body.split("-")
                _this.getData(val.body)
               _this.$store.state.rootPage=_this.returnobj.message
@@ -337,6 +340,7 @@ getUserIP (onNewIP) { // 获取ip地址
              _this.getData(val.body)
         });
          _this.stompClient.subscribe('/user/'+_this.iplocal+'/oneToconf/getResponse', (val) => {//一键改配置
+         
              console.log(val.body)
              _this.getData(val.body)
         });
@@ -465,33 +469,33 @@ getUserIP (onNewIP) { // 获取ip地址
             console.log("----outStepForm----")
                _this.getData(val.body)
         });
-        _this.stompClient.subscribe('/user/'+_this.iplocal+'/readZeroOpt/alone/getResponse', function (val) {
+        _this.stompClient.subscribe('/user/'+_this.iplocal+'/readZeroOpt/alone/getResponse', function (val) {//读取零位
            
             console.log("----zeroOpt----")
              _this.getData(val.body)
                     Bus.$emit('zeroOpt',_this.returnobj.message)
         });
-        _this.stompClient.subscribe('/user/'+_this.iplocal+'/writeZeroOpt/alone/getResponse', function (val) {
+        _this.stompClient.subscribe('/user/'+_this.iplocal+'/writeZeroOpt/alone/getResponse', function (val) {//设置零位
             console.log("----zeroOpt----")
              _this.getData(val.body)
              
         });
-         _this.stompClient.subscribe('/user/'+_this.iplocal+'/createMotorFile/alone/getResponse', function (val) {
+         _this.stompClient.subscribe('/user/'+_this.iplocal+'/createMotorFile/alone/getResponse', function (val) {//创建电机文件
             console.log("----createMotorFile----")
               _this.getData(val.body)
              
         });
-         _this.stompClient.subscribe('/user/'+_this.iplocal+'/readSpeedAcc/alone/getResponse', function (val) {
+         _this.stompClient.subscribe('/user/'+_this.iplocal+'/readSpeedAcc/alone/getResponse', function (val) {//读取速度、加速度
             console.log("----speedAcc----")
              _this.getData(val.body)
                     Bus.$emit('speedAccList',_this.returnobj.message)
         });
-        _this.stompClient.subscribe('/user/'+_this.iplocal+'/writeSpeedAcc/alone/getResponse', function (val) {
+        _this.stompClient.subscribe('/user/'+_this.iplocal+'/writeSpeedAcc/alone/getResponse', function (val) {//写入速度、加速度
             console.log("----speedAcc----")
              _this.getData(val.body)
                  
         });
-         _this.stompClient.subscribe('/user/'+_this.iplocal+'/upload/alone/getResponse', function (val) {
+         _this.stompClient.subscribe('/user/'+_this.iplocal+'/upload/alone/getResponse', function (val) {//上传电机配置文件
                   _this.getData(val.body)
                  
         });
@@ -500,8 +504,13 @@ getUserIP (onNewIP) { // 获取ip地址
                   Bus.$emit('testMoveone',_this.returnobj.message);
         });
          _this.stompClient.subscribe('/user/'+_this.iplocal+'/scanBarcode/alone/getResponse', function (val) {//监听扫码
+                  
                    _this.getData(val.body)
                   Bus.$emit('scanBarcode',_this.returnobj.message);
+        });
+        _this.stompClient.subscribe('/user/'+_this.iplocal+'/initialUpdate/alone/getResponse', function (val) {//监听扫码
+                   _this.getData(val.body)
+                 // Bus.$emit('initialUpdate',_this.returnobj.message);
         });
 
           _this.stompClient.subscribe('/topic/chatRoom', function (val) {
@@ -517,17 +526,18 @@ getUserIP (onNewIP) { // 获取ip地址
 
         // 错误信息订阅
            _this.stompClient.subscribe('/user/'+_this.iplocal+'/'+_this.uid+'/error', function (data) {
-             debugger
+             
             _this.getData(data.body);
 
           });
         }, function (error) {
            console.log('-------请重新连接！------------')
             var userinfo= {
-            userName:this.loginform.userName,
-            passWord:this.loginform.password,
-            projectName:this.loginform.projectName,
-            ip:this.iplocal,
+            userName:_this.loginform.userName,
+            //passWord:_this.loginform.password,
+            passWord:_this.$md5(this.loginform.password),
+            projectName:_this.loginform.projectName,
+            ip:_this.iplocal,
             initflag:2
           }
            _this.reconnect(_this.socketUrl,userinfo, _this.successCallback)

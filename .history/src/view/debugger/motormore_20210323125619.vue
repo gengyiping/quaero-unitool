@@ -250,9 +250,9 @@ export default {
      Bus.$on('zeroOpt',function(val){//监听first组件的txt事件
             _this.zeroForm.zeroCoord=val
         })
-        //  Bus.$on('motorIdId',function(val){//监听first组件的txt事件
-        //     _this.motorId=val
-        // })
+         Bus.$on('motorIdId',function(val){//监听first组件的txt事件
+            _this.motorId=val
+        })
         
        Bus.$on('speedAccList',function(val){//监听first组件的txt事件
          

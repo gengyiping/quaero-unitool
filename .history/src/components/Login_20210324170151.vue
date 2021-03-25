@@ -497,6 +497,7 @@ getUserIP (onNewIP) { // 获取ip地址
 
         // 错误信息订阅
            _this.stompClient.subscribe('/user/'+_this.iplocal+'/'+_this.uid+'/error', function (data) {
+             debugger
             _this.getData(data.body);
 
           });

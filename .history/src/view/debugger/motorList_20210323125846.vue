@@ -28,15 +28,10 @@ export default {
     this.stompClient= this.$store.state.stompClient;
     this.loadselect();//加载电机
     this.motorId=this.$store.state.motorId;
-    if(this.kuList!=null){
-       this.motorName=this.kuList[this.motorId]
-    }
     var _this = this;// `这一步很重要`
-       Bus.$on('allmotor',function(val){//监听first组件的txt事件
+    Bus.$on('allmotor',function(val){//监听first组件的txt事件
           _this.kuList=val.split(",");
-          if(_this.motorId==0){
-            _this.motorName=_this.kuList[0]
-          }
+          _this.motorName=_this.kuList[0]
     });
     // Bus.$on('motorIdId',function(val){//监听first组件的txt事件
     //         _this.motorId=val
@@ -66,17 +61,10 @@ export default {
     stompinit(){
        return this.$store.state.stompClient
     },
-    motorchange(){
-      return this.$store.state.motorId
-    }
   },
   watch:{
     stompinit(newVal,oldVal){
       this.stompClient=newVal
-    },
-    motorchange(newVal,oldVal){
-      this.motorId=newVal
-       this.motorName=this.kuList[newVal]
     },
   },
 }

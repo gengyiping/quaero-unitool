@@ -79,24 +79,19 @@
               <tr>
                <td><el-input v-model="bootIp" placeholder="Bootload Ip" style="width: 125px;"></el-input></td>
                <!-- <td><el-button type="primary" style="width: 125px;" @click="openfirupdate()" plain>开启固件更新</el-button></td> -->
-              <td><el-button type="primary" style="width: 125px;" @click="firclicks" plain>固件更新</el-button></td>
+              <td><el-button type="primary" style="width: 125px;" @click="firclicks" plain>开启固件更新</el-button></td>
 
              </tr>
             
              <tr>
                <td colspan="2">
-                  <!-- <div> -->
+                  <div>
                       <input type="file"  @change="firfileChange($event)"> 
                         <!-- <el-button type="primary"  @click="firclicks">固件更新</el-button> -->
                        <div id='firdd' hidden></div>
-                   <!-- </div> -->
+                   </div>
                 </td>
-             </tr>
-             <tr>
-               <td > <el-button type="primary" style="width: 125px;" @click="openfirupdate()" plain>开启固件更新</el-button></td>
-               <td >
-                 <el-button type="primary" style="width: 125px;" @click="initialUpdate()" plain>首次更新</el-button>
-                </td>
+               <!-- <td><el-button type="primary" style="width: 125px;" @click="transferMove()" plain>选择固件</el-button></td> -->
              </tr>
             
            </table>
@@ -331,7 +326,7 @@ export default {
         tftpval:'开启',//tftp服务
         closeval:'开启',//远程服务
         scanval:'开启',//条码仪状态
-        bootIp:'192.168.3.220',
+        bootIp:'192.168.3.121',
         firfiles:'',
         addArrs:[],
         heightlight:'1000',
@@ -365,15 +360,17 @@ export default {
                _this.scanval=_this.openval
              })
       Bus.$on('firupload',function(val){//监听fi
+                 
                    if(val.indexOf("上传进行中") != -1){
                      var sknum=val.split("_")[0]
                       console.log("次数+++:"+sknum)
                         _this.sendLoad(imgName,n,sknum,knum,str)
                    }
                  })   
-       Bus.$on('allsensor',function(val){//监听first组件的txt事件
+                Bus.$on('allsensor',function(val){//监听first组件的txt事件
            let obj=JSON.parse(val)
             for(let key in obj) {
+               
                 if(key==1)_this.sensorsearchForm.sensor1=obj[key]
                 if(key==2)_this.sensorsearchForm.sensor2=obj[key]
                 if(key==3)_this.sensorsearchForm.sensor3=obj[key]
@@ -628,39 +625,6 @@ alert('ok');
           var ip=this.bootIp
          _this.stompClient.send('/app/updateBoot/'+fileName+'/'+ip)
       }
-    },
-    initialUpdate(){//首次更新
-       var _this = this
-       if(0 == this.addArrs.length){
-             this.$message({
-               type: 'info',
-               message: '请选择要上传的文件'
-             });
-             return;
-           }
-        if(this.checkIp(_this.bootIp)==false){
-          return;
-        }    
-      if(this.firfiles){
-         this.$store.state.resinfo="固件更新开始"
-      //  console.log('baseread='+document.getElementById("upfirfile").defaultValue)
-            var params={} //定义json对象
-              var resAccount=new Array();//定义数组对象
-             var $inputArr = $('.upfirfile');//获取class为resAccount的input对象
-             $inputArr.each(function(){
-	                 resAccount.push($(this).val());//遍历存入数组
-             })
-            params['upfirfile']=resAccount;
-         var messageJson= JSON.stringify({
-           // file:resAccount,
-            fileName:this.firfiles.name,
-            ipStr:this.bootIp
-          });
-          var fileName=this.firfiles.name
-          var ip=this.bootIp
-         _this.stompClient.send('/app/initialUpdate/'+fileName+'/'+ip)
-      }
-        
     },
       sensorsearch(sensorsearchForm){
           Bus.$emit('progres',true) 

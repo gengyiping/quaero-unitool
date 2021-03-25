@@ -62,7 +62,7 @@
               <el-tabs type="border-card">
   <el-tab-pane>
     <span slot="label"><i class="el-icon-info"></i> 消息中心</span>
-     <el-input type="textarea" style="width:100%; height:100%;" v-model="infodesc" :rows="30" ></el-input>
+     <el-input type="textarea" style="width:100%; height:100%; " v-model="infodesc" :rows="24" ></el-input>
      <!-- <el-scrollbar
             style="height: 100%"
             wrap-class="scrollbar-wrapper"  >
@@ -81,7 +81,7 @@
   </el-tab-pane>
   <el-tab-pane label="系统消息">
      <span slot="label"  @click="systemClick()"><i class="el-icon-tickets"></i> 系统消息</span>
-           <el-input type="textarea"  id="system_id" style="width:100%; height:100%; " v-model="systemdesc" :rows="30" ></el-input>
+           <el-input type="textarea"  id="system_id" style="width:100%; height:100%; " v-model="systemdesc" :rows="24" ></el-input>
     </el-tab-pane>
 </el-tabs>
              
@@ -170,7 +170,7 @@ export default {
                new Promise(function (resolve,reject) {
                    for(var i=0;i<19;i++){
                     _this.increase()
-                    _this.waitsl(200)
+                    _this.waitsl(100)
                    }
               }).then(function () {
               });

@@ -81,8 +81,18 @@ export default {
      WebTest,
     },
   mounted() {
+    //  this.getIpPort('./../static/Text/Ip.text') //获取ip内容
+    //  this.loaduser() //加载cookie中的用户信息
+    //this.init()//初始化连接
     var that = this
+    // Bus.$off('loadinit')
+    // Bus.$on('loadinit', function (msg) {
+    //   
+    //     console.log(msg);
+    //     that.loginSubmit();
+    // })
      this.getUserIP(function (ip) { // 调用ip接口
+     
             that.iplocal = String(ip)
             that.getIpPort('./../static/Text/Ip.text') //获取ip内容
             that.loaduser() //加载cookie中的用户信息
@@ -149,7 +159,14 @@ getUserIP (onNewIP) { // 获取ip地址
      this.socketUrl=xfil
      console.log("获取本地的ip.text文件"+xfil)
    },
+    //  loginSubmit(){//router的index.js中要配置
+    //     this.$cookieStore.setCookie('name', 'aaaa')
+    //     this.$router.push({ path:'/webTest'})
+    //     var ssm=this.$cookieStore.getCookie( 'name')
+    //      console.log('---用户名---'+ssm)
+    //  },
     login(){
+       //this.$cookieStore.setCookie('user', "")
        this.loginSubmit(0)
     },
     loaduser(){
@@ -497,6 +514,7 @@ getUserIP (onNewIP) { // 获取ip地址
 
         // 错误信息订阅
            _this.stompClient.subscribe('/user/'+_this.iplocal+'/'+_this.uid+'/error', function (data) {
+             
             _this.getData(data.body);
 
           });

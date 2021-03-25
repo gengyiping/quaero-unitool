@@ -28,8 +28,8 @@ export default {
     this.stompClient= this.$store.state.stompClient;
     this.loadselect();//加载电机
     this.motorId=this.$store.state.motorId;
-    if(this.kuList!=null){
-       this.motorName=this.kuList[this.motorId]
+    if(){
+      
     }
     var _this = this;// `这一步很重要`
        Bus.$on('allmotor',function(val){//监听first组件的txt事件

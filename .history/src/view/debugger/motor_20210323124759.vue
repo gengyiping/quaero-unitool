@@ -349,9 +349,9 @@ export default {
    // this.loadselect();//加载电机
    this.motorId=this.$store.state.motorId;
     var _this = this;// `这一步很重要`
-    //  Bus.$on('motorIdId',function(val){//监听first组件的txt事件
-    //         _this.motorId=val
-    //     })
+        Bus.$on('motorIdId',function(val){//监听first组件的txt事件
+            _this.motorId=val
+        })
          Bus.$on('searchInlineopt',function(val){//监听first组件的txt事件
         var vk= JSON.parse(val)
         if(vk.cmshift>0&vk.cmshift<5){

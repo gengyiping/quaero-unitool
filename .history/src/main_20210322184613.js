@@ -12,13 +12,13 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import uploader from 'vue-simple-uploader'
 import md5 from 'js-md5'
-import axios from 'axios'
 
 
 Vue.use(ElementUI)
 Vue.use(store)
 Vue.use(VueCookies)
 //Vue.use(NProgress)
+import axios from 'axios'
 //import VueAxios from 'vue-axios'
 //Vue.use(axios)
 //Vue.use(VueAxios)
