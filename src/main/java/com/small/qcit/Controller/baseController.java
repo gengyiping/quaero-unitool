@@ -403,6 +403,36 @@ public class baseController extends optContorller {
 			errorSend(e, user);
 		}
 	}
+	@MessageMapping("/initialUpdate/{fileName}/{ip}")
+	public void initialUpdate(@DestinationVariable("fileName") String fileName, @DestinationVariable("ip") String ip,
+			User user) throws Exception {
+		System.out.println("首次固件更新啦--------");
+		String chipId = "";
+		String kfir=uploadService.getFirPath();
+		if(kfir==null) {
+			successSend("/user/"+user.getIp()+"/initialUpdate/alone/getResponse", "无上传固件", user);
+			return;
+		}
+		try {
+			//api.openBootLoader(0);
+			String command = System.getProperty("user.dir") + "\\tftp.exe -i -v " + ip + " PUT "
+					+kfir;
+			System.out.println("command=" + command);
+			//Thread.sleep(5000);
+			boolean cmdflag = CmdExecUtil.runExec(command);
+			if (cmdflag == true) {
+				chipId = "固件更新成功";
+				File dil=new File(kfir);
+				dil.delete();
+			} else {
+				chipId = "固件更新失败";
+			}
+			successSend("/user/"+user.getIp()+"/initialUpdate/alone/getResponse", chipId, user);
+		} catch (Exception e) {
+			errorSend(e, user);
+		}
+	}
+	
 	private String filepath="";
 	@MessageMapping("/firuploadpath")
 	public void firuploadpath( @RequestBody Filepath path, User user) {

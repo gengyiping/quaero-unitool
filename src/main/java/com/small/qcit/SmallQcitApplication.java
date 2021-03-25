@@ -5,6 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+import com.small.qcit.utils.CheckUtils;
+
 //@ComponentScan("com.quaero.base")
 @SpringBootApplication
 @EnableAsync

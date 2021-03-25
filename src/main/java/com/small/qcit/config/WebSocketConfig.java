@@ -39,7 +39,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 //.addInterceptors() //拦截处理，和http拦截类似
                 .setAllowedOrigins("*") //跨域
                 .withSockJS(); //使用sockJS
-    	//stompEndpointRegistry.addEndpoint("/queueServer").withSockJS();//注册两个STOMP的endpoint，分别用于广播和点对点  
+    	//stompEndpointRegistry.addEndpoint("/queueServer").withSockJS();//注册两个STOMP的endpoint，分别用于广播和点对点
 
     }
 
@@ -71,7 +71,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(webSocketInterceptor);
     }
-
+    @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+      registration.setMessageSizeLimit(500 * 1024 * 1024);
+      registration.setSendBufferSizeLimit(1024 * 1024 * 1024);
+      registration.setSendTimeLimit(200000);
+     }
 
      /*将客户端渠道拦截器加入spring ioc容器*/
 //    @Bean
@@ -80,12 +85,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 //    }
 
 
-//    @Override
-//    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
-//        registration.setMessageSizeLimit(500 * 1024 * 1024);
-//        registration.setSendBufferSizeLimit(1024 * 1024 * 1024);
-//        registration.setSendTimeLimit(200000);
-//    }
+//   
     /**
      * WebSocket Error 处理
      *

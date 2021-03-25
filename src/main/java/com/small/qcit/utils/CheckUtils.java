@@ -26,13 +26,13 @@ public class CheckUtils {
     /**
      * 设置的访问密码
      */
-    private static String password;
+    public static String password;
 
     @Value("${chatrecord.password}")
     public void setPassword(String password) {
         CheckUtils.password = password;
     }
-    public String getPassword() {
+    public  String getPassword() {
 		return password;
     }
 

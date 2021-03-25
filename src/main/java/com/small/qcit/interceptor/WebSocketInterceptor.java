@@ -2,6 +2,8 @@ package com.small.qcit.interceptor;
 
 import java.util.List;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -27,6 +29,13 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class WebSocketInterceptor implements ChannelInterceptor {
+//	public static void main(String[] args) {
+//		String ss=new CheckUtils().getPassword();
+//		System.out.println("dddd="+CheckUtils.password);
+//	}
+	public static void main(String[] args) {
+		System.out.println(DigestUtils.md5Hex("123456"));
+	}
     /**
      * 绑定用户信息
      *
@@ -56,8 +65,11 @@ public class WebSocketInterceptor implements ChannelInterceptor {
                
                 String initflag=stompHeaderAccessor.getFirstNativeHeader("initflag");
                 List<User> userList=opt.getuserList();
-              
-                if ("admin".equals(userName) && "123456".equals(stompHeaderAccessor.getFirstNativeHeader("passWord"))){
+                String pS=DigestUtils.md5Hex(CheckUtils.password);
+                System.out.println("pS="+pS);
+                String ppd=stompHeaderAccessor.getFirstNativeHeader("passWord");
+                System.out.println("ppd="+ppd);
+                if ("admin".equals(userName) && pS.equals(ppd)){
                 	
                 	//if(userList.size()==0) {
 //                		  user.setRootPage("0");

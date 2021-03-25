@@ -1,5 +1,6 @@
 package com.small.qcit.Controller;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -42,12 +43,20 @@ public class optContorller {
 		}
 	}
     public  void errorSend(Exception e,User user){
+    	try {
     	    StringWriter sw = new StringWriter();    
 			PrintWriter pw = new PrintWriter(sw);    
 			e.printStackTrace(pw);
-			 log.error("fount error 。。。",e.toString());
-			CodeEnum.ABNORMAL.setDesc(e.toString());
-		    messageService.sendErrorMessage(CodeEnum.ABNORMAL, user);
+			sw.close();
+			pw.close();
+			log.error("fount error 。。。",sw.toString());
+				CodeEnum.ABNORMAL.setDesc(sw.toString());
+			    messageService.sendErrorMessage(CodeEnum.ABNORMAL, user);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+	           
+			
 	}
     public List getuserList() {
 		return this.loginmess;
