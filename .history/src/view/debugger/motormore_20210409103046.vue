@@ -236,6 +236,32 @@ export default {
  this.stompClient= this.$store.state.stompClient;
    // this.loadselect();//加载电机
    this.motorId=this.$store.state.motorId;
+ var _this = this;// `这一步很重要`
+    Bus.$on('phymax',function(val){//监听first组件的txt事件
+           var op= val.split(';')
+            _this.ruleForm.physicsCoord=op[0]
+            _this.ruleForm.coord=op[1]
+        })
+         Bus.$on('outMove',function(val){//监听first组件的txt事件
+           var op= val.split(';')
+            _this.outStepForm.reverse=op[0]
+            _this.outStepForm.forward=op[1]
+        })
+     Bus.$on('zeroOpt',function(val){//监听first组件的txt事件
+            _this.zeroForm.zeroCoord=val
+        })
+        //  Bus.$on('motorIdId',function(val){//监听first组件的txt事件
+        //     _this.motorId=val
+        // })
+        
+       Bus.$on('speedAccList',function(val){//监听first组件的txt事件
+         
+           var op= val.split(';')
+              _this.speedForm.speedCoord=op[0]
+             _this.speedForm.accCoord=op[1]
+              _this.speedForm.resetCoord=op[2]
+              _this.speedForm.resetAccCoord=op[3]
+        })
   },
   methods: {
      checkNum:function(val) {
@@ -251,12 +277,7 @@ export default {
             motorId: this.$store.state.motorId
           });
        this.stompClient.send('/app/coordLimit/read',messageJson)
-        Bus.$on('phymax',function(val){//监听first组件的txt事件
-        
-           var op= val.split(';')
-            ruleForm.physicsCoord=op[0]
-            ruleForm.coord=op[1]
-        })
+       
     },
     writeCoordLimit(ruleForm){
       if(this.checkNum(ruleForm.coord)==false){
@@ -283,11 +304,7 @@ export default {
             motorId: this.$store.state.motorId
           });
        this.stompClient.send('/app/outStepForm/read',messageJson,{})
-        Bus.$on('outMove',function(val){//监听first组件的txt事件
-           var op= val.split(';')
-            outStepForm.reverse=op[0]
-            outStepForm.forward=op[1]
-        })
+       
     },
      writeOutMove(outStepForm){
        if(this.checkNum(outStepForm.forward)==false){
@@ -315,9 +332,7 @@ export default {
             motorId: this.$store.state.motorId
           });
     this.stompClient.send('/app/zeroOpt/read',messageJson,{})
-        Bus.$on('zeroOpt',function(val){//监听first组件的txt事件
-            zeroForm.zeroCoord=val
-        })
+       
     },
      writeZeroOpt(zeroForm){
         if(this.checkNum(zeroForm.zeroCoord)==false){
@@ -348,14 +363,6 @@ export default {
             motorId: this.$store.state.motorId
           });
     this.stompClient.send('/app/speedAcc/read',messageJson,{})
-         Bus.$on('speedAccList',function(val){//监听first组件的txt事件
-         
-           var op= val.split(';')
-              speedForm.speedCoord=op[0]
-              speedForm.accCoord=op[1]
-              speedForm.resetCoord=op[2]
-              speedForm.resetAccCoord=op[3]
-        })
     },
      validate:function(num){
       var reg = /^\d+(?=\.{0,1}\d+$|$)/
@@ -363,19 +370,19 @@ export default {
      return false ;  
      },
      writeSpeedAcc(speedForm){
-       if(validate(speedForm.accCoord)==false){
+       if(this.validate(speedForm.accCoord)==false){
               alert("请输入正数电机速度数值")
                 return;
        }
-       if(validate(speedForm.speedCoord)==false){
+       if(this.validate(speedForm.speedCoord)==false){
               alert("请输入正数电机加速度数值")
                 return;
        }
-       if(validate(speedForm.resetCoord)==false){
+       if(this.validate(speedForm.resetCoord)==false){
               alert("请输入正数电机复位速度数值")
                 return;
        }
-       if(validate(speedForm.resetAccCoord)==false){
+       if(this.validate(speedForm.resetAccCoord)==false){
               alert("请输入正数电机复位加速度数值")
                 return;
        }

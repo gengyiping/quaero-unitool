@@ -35,11 +35,11 @@
     </div>
      <div class="tabBox" style="min-width:1080px;min-height:500px;background: rgb(238, 255, 247);border-radius:8px;">
         <el-tabs :tab-position="tabPosition" v-model="activeName" @tab-click="handleClick" style="height: 708px;">
-            <el-tab-pane label="应用" name="0">
-               <Qcitsoft height="100%" width="100%" />
-            </el-tab-pane>
             <el-tab-pane label="调试" name="1">
                <Qcitdebug height="100%" width="100%"/>
+            </el-tab-pane>
+            <el-tab-pane label="应用" name="0">
+               <Qcitsoft height="100%" width="100%" />
             </el-tab-pane>
             <!-- <el-tab-pane label="Demo" name="2">
                 <Demo height="10000px" width="100%"/>
@@ -62,7 +62,7 @@
               <el-tabs type="border-card">
   <el-tab-pane>
     <span slot="label"><i class="el-icon-info"></i> 消息中心</span>
-     <el-input type="textarea" style="width:370px; height:600px; " v-model="infodesc" :rows="24" ></el-input>
+     <el-input type="textarea" style="width:100%; height:100%;" v-model="infodesc" :rows="30" ></el-input>
      <!-- <el-scrollbar
             style="height: 100%"
             wrap-class="scrollbar-wrapper"  >
@@ -81,7 +81,7 @@
   </el-tab-pane>
   <el-tab-pane label="系统消息">
      <span slot="label"  @click="systemClick()"><i class="el-icon-tickets"></i> 系统消息</span>
-           <el-input type="textarea"  id="system_id" style="width:370px; height:600px; " v-model="systemdesc" :rows="24" ></el-input>
+           <el-input type="textarea"  id="system_id" style="width:100%; height:100%; " v-model="systemdesc" :rows="30" ></el-input>
     </el-tab-pane>
 </el-tabs>
              
@@ -152,6 +152,12 @@ export default {
 
   mounted() {
      this.stompClient= this.$store.state.stompClient;
+       Bus.$on('ifInit',function(val){//监听fi
+            if(val=='true'){
+               _this.initshow=false
+               _this.closeshow=true
+            }
+         })
      this.ifinit()
        var _this = this
        Bus.$on('progres',function(val){//监听fi
@@ -164,14 +170,13 @@ export default {
                new Promise(function (resolve,reject) {
                    for(var i=0;i<19;i++){
                     _this.increase()
-                    _this.waitsl(100)
+                    _this.waitsl(200)
                    }
               }).then(function () {
               });
            
             }
          })
-     
   },
   methods: {
     systemClick(){
@@ -195,13 +200,7 @@ export default {
     ifinit(){
        var _this = this;
        this.stompClient.send('/app/ifInit')
-        Bus.$on('ifInit',function(val){//监听fi
-        debugger
-            if(val=='true'){
-               _this.initshow=false
-               _this.closeshow=true
-            }
-         })
+       
     },
      waitsl(delay) {
        var start = (new Date()).getTime();

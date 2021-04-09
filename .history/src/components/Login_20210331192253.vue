@@ -258,15 +258,7 @@ getUserIP (onNewIP) { // 获取ip地址
                console.log('-------用户连接成功------------')
               // _this.$message('连接后台成功')
               //   _this.setConnected(true)
-                 //Bus.$emit('connectstate',true)
-                  _this.loginshow=false
-                 _this.mainshow=true
-                 _this.cacheUser() //user放入cookie
-                 if(indexid==0){//点击登录时，保存用户在哪个界面
-                     _this.stompClient.send('/app/page/0-#-#-#',{})
-                 }else{//获取上一次登录的界面
-                     _this.stompClient.send('/app/initstate')
-                 } 
+                  Bus.$emit('connectstate',true)
             }
           });
            _this.stompClient.subscribe('/topic/getResponse', (val) => {//初始话连接

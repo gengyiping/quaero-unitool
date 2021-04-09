@@ -258,6 +258,7 @@ getUserIP (onNewIP) { // 获取ip地址
                console.log('-------用户连接成功------------')
               // _this.$message('连接后台成功')
               //   _this.setConnected(true)
+               debugger
                  //Bus.$emit('connectstate',true)
                   _this.loginshow=false
                  _this.mainshow=true

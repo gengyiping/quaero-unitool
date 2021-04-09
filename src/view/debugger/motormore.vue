@@ -370,19 +370,19 @@ export default {
      return false ;  
      },
      writeSpeedAcc(speedForm){
-       if(validate(speedForm.accCoord)==false){
+       if(this.validate(speedForm.accCoord)==false){
               alert("请输入正数电机速度数值")
                 return;
        }
-       if(validate(speedForm.speedCoord)==false){
+       if(this.validate(speedForm.speedCoord)==false){
               alert("请输入正数电机加速度数值")
                 return;
        }
-       if(validate(speedForm.resetCoord)==false){
+       if(this.validate(speedForm.resetCoord)==false){
               alert("请输入正数电机复位速度数值")
                 return;
        }
-       if(validate(speedForm.resetAccCoord)==false){
+       if(this.validate(speedForm.resetAccCoord)==false){
               alert("请输入正数电机复位加速度数值")
                 return;
        }

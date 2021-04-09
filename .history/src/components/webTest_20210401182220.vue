@@ -35,13 +35,12 @@
     </div>
      <div class="tabBox" style="min-width:1080px;min-height:500px;background: rgb(238, 255, 247);border-radius:8px;">
         <el-tabs :tab-position="tabPosition" v-model="activeName" @tab-click="handleClick" style="height: 708px;">
-             <el-tab-pane label="应用" name="0">
+            <el-tab-pane label="应用" name="1">
                <Qcitsoft height="100%" width="100%" />
             </el-tab-pane>
-            <el-tab-pane label="调试" name="1">
+            <el-tab-pane label="调试" name="0">
                <Qcitdebug height="100%" width="100%"/>
             </el-tab-pane>
-           
             <!-- <el-tab-pane label="Demo" name="2">
                 <Demo height="10000px" width="100%"/>
             </el-tab-pane> -->
