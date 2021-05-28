@@ -1,5 +1,5 @@
 {
-  "name": "qcit-small",
+  "name": "qcit-smalls",
   "version": "1.0.0",
   "description": "A qcit samll project",
   "author": "qcit",
@@ -16,7 +16,7 @@
     "axios": "^0.19.2",
     "css-loader": "^0.28.11",
     "element-ui": "^2.13.2",
-    "jquery": "^3.5.1",
+    "jquery": "^3.6.0",
     "js-md5": "^0.7.3",
     "less-loader": "^4.1.0",
     "node-sass": "^4.14.1",
@@ -62,6 +62,7 @@
     "nightwatch": "^0.9.12",
     "node-notifier": "^5.1.2",
     "node-sass": "^4.14.1",
+    "nwjs-builder-phoenix": "^1.15.0",
     "optimize-css-assets-webpack-plugin": "^3.2.0",
     "ora": "^1.2.0",
     "portfinder": "^1.0.13",
@@ -85,8 +86,7 @@
     "webpack": "^3.6.0",
     "webpack-bundle-analyzer": "^2.9.0",
     "webpack-dev-server": "^2.9.1",
-    "webpack-merge": "^4.1.0",
-    "nwjs-builder-phoenix": "^1.15.0"
+    "webpack-merge": "^4.1.0"
   },
   "engines": {
     "node": ">= 6.0.0",
@@ -97,5 +97,4 @@
     "last 2 versions",
     "not ie <= 8"
   ]
-  
 }

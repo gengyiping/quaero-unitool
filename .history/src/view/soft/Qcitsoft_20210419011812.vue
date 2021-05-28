@@ -1,0 +1,43 @@
+<template>
+<div class="width:1080px;height:780px">
+    应用主界面
+    <div>
+     <DemoTest></DemoTest>  
+    </div>
+   <div id="app">
+ 
+</div>
+</div>
+</template>
+<script>
+import demoTest from '@/view/debugger/demoTest'
+export default {
+  data() {
+    return {
+      sites: [
+      { name: 'Runoob' },
+       { name: 'Runoob' },
+      { name: 'Google' },
+      { name: 'Taobao' }
+    ]
+    }
+  },
+   components:{
+         DemoTest:demoTest
+   },
+  mounted() {
+    	document.getElementById("app").innerHTML="1111111111111111";
+  
+  },
+  methods: {
+
+  },
+   computed: {
+   
+  },
+  watch:{
+    
+  },
+}
+
+</script>

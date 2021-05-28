@@ -52,7 +52,7 @@
        <el-divider content-position="left"></el-divider>
           <el-row :gutter="20" style="">
              <el-col :span="16"><div class="grid-content bg-purple"></div></el-col>
-             <el-col :span="8"><div class="grid-content bg-purple">版本信息：1.0.0.278</div></el-col>
+             <el-col :span="8"><div class="grid-content bg-purple">版本信息：1.0.0.393</div></el-col>
           </el-row>
      </div>
      <el-drawer
